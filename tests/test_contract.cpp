@@ -106,7 +106,7 @@ int main() {
     Case specials[] = {
         {"equal_scores", 64, 64, 64, 1, 1.0f, true, false, "q = 0: uniform softmax, analytic check"},
         {"large_scores", 128, 64, 64, 1, 100.0f, false, false,
-         "score spread ~ +/-800: max subtraction must keep exp finite"},
+         "score spread ~ +/-130: max subtraction must keep exp finite"},
         {"repeated_calls", 256, 64, 64, 1, 1.0f, false, true, "determinism + output overwrite"},
     };
     for (const Case& c : specials) run_case(c);
