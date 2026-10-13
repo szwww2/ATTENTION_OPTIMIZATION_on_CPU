@@ -44,6 +44,19 @@ masking and KV-cache decoding are outside the project.
 
 Each owner supplies their own tests, measurements and figures; the report is written together.
 
+## Build and run
+
+```
+build.bat                    # Windows (MSYS2 g++)
+bash build.sh                # Linux / macOS
+build\attn_tests.exe         # the contract suite, has to end with SUITE PASSED
+```
+
+On Linux or macOS the binary is build/attn_tests, without the .exe suffix.
+
+The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
+baseline there is nothing left for the SIMD level to be compared against.
+
 ## Use of generative AI
 
 Generative AI was used for language clarity, discussion of the plan, and drafting parts of the baseline code
