@@ -1,4 +1,4 @@
-# Attention Optimisation on CPU
+# Attention Optimization on CPU
 
 Memory-Performance Trade-offs of Blocked and Streaming Attention on a CPU
 
@@ -7,16 +7,18 @@ Deadline 13 Nov 2026, 23:59.
 
 ## Objectives
 
-Study how optimisation choices affect the performance of scaled dot-product attention on a CPU, under one
+Study how optimization choices affect the performance of scaled dot-product attention on a CPU, under one
 numerical contract, one FP64 oracle and one harness:
 
-- implement and validate three routes (full-matrix, row-wise, blocked streaming) in scalar, basic SIMD and
-  SIMD + static OpenMP form;
-- identify when blocking and online softmax cut memory traffic or improve locality;
-- quantify what basic SIMD and OpenMP query-block parallelism actually buy;
-- explain the bottlenecks from throughput and workspace measurements, with a roofline-style model where feasible.
+- implement and validate the CPU attention kernels with the same numerical contract, as three routes
+  (full-matrix, row-wise, blocked streaming) in scalar, basic SIMD and SIMD + static OpenMP form;
+- identify when blocking and online softmax reduce memory traffic or improve locality;
+- quantify the effects of basic SIMD dot-product and value-accumulation loops, and of OpenMP query-block
+  parallelism;
+- explain observed bottlenecks using throughput and workspace measurements, supported where feasible by
+  bandwidth measurements and a roofline-style model.
 
-A PyTorch CPU SDPA comparison is a target. A packed microkernel or a vectorised exponential is an optional
+A PyTorch CPU SDPA comparison is a target. A packed microkernel or a vectorized exponential is an optional
 extension; at most one is taken, decided at the end of Week 4.
 
 GPU kernels, multi-head fusion, training, causal
@@ -28,7 +30,7 @@ masking and KV-cache decoding are outside the project.
 |---|---|
 | 1 | Contract, CPU and compiler settings, FP64 oracle, full-matrix baseline, harness skeleton. PyTorch checked. |
 | 2 | Row-wise and blocked-streaming kernels validated. Repeatable timing. Small CPU SDPA comparison if it runs. |
-| 3 | Shared basic SIMD loops on all routes. Vectorisation verified. Bounded tile parameters picked. Result tables drafted. |
+| 3 | Shared basic SIMD loops on all routes. Vectorization verified. Bounded tile parameters picked. Result tables drafted. |
 | 4 | Static OpenMP. Core comparisons and target evidence. Figures drafted. Decision on at most one extension. |
 | 5 | Results and interpretation finished. Extension finished. Report cross-reviewed. Code and settings frozen. |
 | 6 | Frozen results reproduced, defects fixed, report finished. Last half-week kept as buffer. |
