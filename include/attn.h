@@ -37,7 +37,6 @@ class SplitMix64 {
 public:
     explicit SplitMix64(std::uint64_t seed) : state_(seed) {}
     std::uint64_t next_u64();
-    double next_uniform(double lo, double hi);
 
 private:
     std::uint64_t state_;

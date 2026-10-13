@@ -22,16 +22,12 @@ std::uint64_t SplitMix64::next_u64() {
     return z ^ (z >> 31);
 }
 
-double SplitMix64::next_uniform(double lo, double hi) {
-    // top 53 bits -> [0, 1)
-    const double u = static_cast<double>(next_u64() >> 11) * (1.0 / 9007199254740992.0);
-    return lo + (hi - lo) * u;
-}
-
 void fill_uniform(float* dst, std::size_t n, std::uint64_t seed, float lo, float hi) {
     SplitMix64 rng(seed);
     for (std::size_t i = 0; i < n; ++i) {
-        dst[i] = static_cast<float>(rng.next_uniform(static_cast<double>(lo), static_cast<double>(hi)));
+        // top 53 bits -> [0, 1)
+        const double u = static_cast<double>(rng.next_u64() >> 11) * (1.0 / 9007199254740992.0);
+        dst[i] = static_cast<float>(lo + (hi - lo) * u);
     }
 }
 
