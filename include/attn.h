@@ -17,7 +17,6 @@ struct Shape {
 
 inline std::size_t qk_elems(const Shape& s) { return s.L * s.d; }
 inline std::size_t v_elems(const Shape& s) { return s.L * s.dv; }
-inline std::size_t out_elems(const Shape& s) { return s.L * s.dv; }
 // Workspace size in floats.
 inline std::size_t full_matrix_workspace_elems(const Shape& s) { return s.L * s.L; }
 

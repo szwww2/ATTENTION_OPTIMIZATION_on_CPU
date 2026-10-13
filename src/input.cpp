@@ -8,8 +8,8 @@ void Tensors::resize(const Shape& s) {
     k.assign(qk_elems(s), 0.0f);
     v.assign(v_elems(s), 0.0f);
     ws.assign(full_matrix_workspace_elems(s), 0.0f);
-    o.assign(out_elems(s), 0.0f);
-    o_ref.assign(out_elems(s), 0.0);
+    o.assign(v_elems(s), 0.0f);
+    o_ref.assign(v_elems(s), 0.0);
 }
 
 std::uint64_t SplitMix64::next_u64() {
