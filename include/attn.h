@@ -1,5 +1,6 @@
 // Shared interface for the attention routes, for the other teammates to implement.
 // O = softmax(QK^T/sqrt(d))V, FP32, non-causal, single head, batch 1.
+// Checked against the FP64 oracle: |O - O64| <= 1e-4 + 1e-3|O64|.
 #pragma once
 
 #include <cstddef>
@@ -54,5 +55,24 @@ void full_matrix_scalar_fp32(const Shape& s, const float* q, const float* k, con
 
 // q = 0: every output row is the mean of the V rows. Used by the equal-scores case.
 void uniform_attention_reference(const Shape& s, const float* v, double* out);
+
+// Pass rule. max_rel blows up near zero, so report it next to max_abs.
+struct Contract {
+    double atol = 1e-4;
+    double rtol = 1e-3;
+    double rel_denom_floor = 1e-8;  // relative-error denominator: max(1e-8, |ref|)
+};
+
+struct ErrorReport {
+    double max_abs = 0.0;
+    double max_rel = 0.0;
+    // <= 0 means pass
+    double worst_margin = 0.0;
+    std::size_t worst_index = 0;
+    std::size_t non_finite = 0;
+    bool pass = false;
+};
+
+ErrorReport check_contract(const float* got, const double* ref, std::size_t n, const Contract& c);
 
 }  // namespace attn
