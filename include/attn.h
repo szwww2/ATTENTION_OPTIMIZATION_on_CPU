@@ -1,4 +1,5 @@
 // Shared interface for the attention routes, for the other teammates to implement.
+// O = softmax(QK^T/sqrt(d))V, FP32, non-causal, single head, batch 1.
 #pragma once
 
 #include <cstddef>
@@ -43,5 +44,15 @@ private:
 };
 
 void fill_uniform(float* dst, std::size_t n, std::uint64_t seed, float lo, float hi);
+
+// Route 0: FP64 reference. Never timed.
+void oracle_fp64(const Shape& s, const float* q, const float* k, const float* v, double* out);
+
+// Route 1: full matrix. S = QK^T/sqrt(d) stored whole, then softmax rows, then PV.
+void full_matrix_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                             float* score_ws, float* out);
+
+// q = 0: every output row is the mean of the V rows. Used by the equal-scores case.
+void uniform_attention_reference(const Shape& s, const float* v, double* out);
 
 }  // namespace attn
