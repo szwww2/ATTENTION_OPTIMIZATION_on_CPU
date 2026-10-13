@@ -1,0 +1,10 @@
+# build artefacts (group repo keeps sources, not binaries)
+build/
+*.o
+*.obj
+*.exe
+*.pdb
+# run output stays local too
+results/
+__pycache__/
+*.pyc
