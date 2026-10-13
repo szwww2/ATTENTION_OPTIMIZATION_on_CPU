@@ -30,4 +30,18 @@ struct Tensors {
     void fill_device_neutral(std::uint64_t seed);
 };
 
+// Own RNG, splitmix64: the same seed must give the same inputs on any machine
+// (std::uniform_real_distribution does not guarantee that).
+class SplitMix64 {
+public:
+    explicit SplitMix64(std::uint64_t seed) : state_(seed) {}
+    std::uint64_t next_u64();
+    double next_uniform(double lo, double hi);
+
+private:
+    std::uint64_t state_;
+};
+
+void fill_uniform(float* dst, std::size_t n, std::uint64_t seed, float lo, float hi);
+
 }  // namespace attn
