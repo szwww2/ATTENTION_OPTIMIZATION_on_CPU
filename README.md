@@ -49,10 +49,12 @@ Each owner supplies their own tests, measurements and figures; the report is wri
 ```
 build.bat                    # Windows (MSYS2 g++)
 bash build.sh                # Linux / macOS
-build\attn_tests.exe         # the contract suite, has to end with SUITE PASSED
+build\attn_tests.exe         # route 1 contract suite, has to end with SUITE PASSED
+build\attn_blocks.exe        # route 2, block sizes and row orders, bit for bit
+build\attn_bench.exe         # timing, L = 128 ... 2048
 ```
 
-On Linux or macOS the binary is build/attn_tests, without the .exe suffix.
+On Linux or macOS the binaries drop the .exe suffix.
 
 The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
 baseline there is nothing left for the SIMD level to be compared against.
