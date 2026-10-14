@@ -44,6 +44,14 @@ masking and KV-cache decoding are outside the project.
 
 Each owner supplies their own tests, measurements and figures; the report is written together.
 
+## How we work
+
+`main` is shared, so please be careful: work on a dev branch of your own -- `dev/liruiqin` as an
+example -- and push there.
+
+A pull request then gives the others a chance to look before the work lands on `main`. A quick fix
+can still go straight to `main`.
+
 ## Build and run
 
 ```
