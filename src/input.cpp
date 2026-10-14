@@ -32,7 +32,7 @@ void fill_uniform(float* dst, std::size_t n, std::uint64_t seed, float lo, float
 }
 
 // Distinct streams per tensor, so one seed determines the whole call.
-void Tensors::fill_device_neutral(std::uint64_t seed) {
+void Tensors::fill_qkv(std::uint64_t seed) {
     fill_uniform(q.data(), q.size(), seed * 3u + 1u, -1.0f, 1.0f);
     fill_uniform(k.data(), k.size(), seed * 3u + 2u, -1.0f, 1.0f);
     fill_uniform(v.data(), v.size(), seed * 3u + 3u, -1.0f, 1.0f);

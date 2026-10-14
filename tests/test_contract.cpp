@@ -38,7 +38,7 @@ void run_case(const Case& c) {
     attn::Shape s{c.L, c.d, c.dv};
     attn::Tensors t;
     t.resize(s);
-    t.fill_device_neutral(c.seed);
+    t.fill_qkv(c.seed);
     if (c.zero_q) std::fill(t.q.begin(), t.q.end(), 0.0f);
     if (c.q_scale != 1.0f) {
         for (float& x : t.q) x *= c.q_scale;

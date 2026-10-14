@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
     attn::Tensors t;
     t.resize(s);
-    t.fill_device_neutral(seed);
+    t.fill_qkv(seed);
     attn::oracle_fp64(s, t.q.data(), t.k.data(), t.v.data(), t.o_ref.data());
     attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), t.o.data());
 

@@ -28,7 +28,7 @@ struct Tensors {
     std::vector<double> o_ref;    // FP64 reference output for validation
 
     void resize(const Shape& s);
-    void fill_device_neutral(std::uint64_t seed);
+    void fill_qkv(std::uint64_t seed);
 };
 
 // Own RNG, splitmix64: the same seed must give the same inputs on any machine

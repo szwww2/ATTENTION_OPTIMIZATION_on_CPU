@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         attn::Shape s{p.L, 64, 64};
         attn::Tensors t;
         t.resize(s);
-        t.fill_device_neutral(/*seed=*/20261005ull + p.L);
+        t.fill_qkv(/*seed=*/20261005ull + p.L);
         t.ws.assign(attn::full_matrix_workspace_elems(s), 0.0f);
 
         for (int i = 0; i < p.warmup; ++i) {
