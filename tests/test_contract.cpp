@@ -38,6 +38,7 @@ void run_case(const Case& c) {
     attn::Shape s{c.L, c.d, c.dv};
     attn::Tensors t;
     t.resize(s);
+    t.ws.assign(attn::full_matrix_workspace_elems(s), 0.0f);
     t.fill_qkv(c.seed);
     if (c.zero_q) std::fill(t.q.begin(), t.q.end(), 0.0f);
     if (c.q_scale != 1.0f) {

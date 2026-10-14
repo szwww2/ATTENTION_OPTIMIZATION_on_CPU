@@ -26,7 +26,7 @@ inline std::size_t rowwise_workspace_elems(const Shape& s, std::size_t query_blo
 // Buffers for one call.
 struct Tensors {
     std::vector<float> q, k, v;   // inputs
-    std::vector<float> ws;        // workspace
+    std::vector<float> ws;        // workspace, sized by the caller for the route it runs
     std::vector<float> o;         // FP32 output
     std::vector<double> o_ref;    // FP64 reference output for validation
 
