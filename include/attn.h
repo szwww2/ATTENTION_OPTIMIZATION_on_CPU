@@ -66,7 +66,6 @@ struct ErrorReport {
     double max_rel = 0.0;
     // <= 0 means pass
     double worst_margin = 0.0;
-    std::size_t worst_index = 0;
     std::size_t non_finite = 0;
     bool pass = false;
 };

@@ -26,10 +26,7 @@ ErrorReport check_contract(const float* got, const double* ref, std::size_t n, c
 
         if (diff > r.max_abs) r.max_abs = diff;
         if (rel > r.max_rel) r.max_rel = rel;
-        if (margin > r.worst_margin) {
-            r.worst_margin = margin;
-            r.worst_index = i;
-        }
+        if (margin > r.worst_margin) r.worst_margin = margin;
     }
 
     if (r.non_finite == 0 && r.worst_margin <= 0.0) r.pass = true;
