@@ -19,6 +19,9 @@ inline std::size_t qk_elems(const Shape& s) { return s.L * s.d; }
 inline std::size_t v_elems(const Shape& s) { return s.L * s.dv; }
 // Workspace size in floats.
 inline std::size_t full_matrix_workspace_elems(const Shape& s) { return s.L * s.L; }
+inline std::size_t rowwise_workspace_elems(const Shape& s, std::size_t query_block) {
+    return query_block * s.L;
+}
 
 // Buffers for one call.
 struct Tensors {
@@ -50,6 +53,15 @@ void oracle_fp64(const Shape& s, const float* q, const float* k, const float* v,
 // Route 1: full matrix. S = QK^T/sqrt(d) stored whole, then softmax rows, then PV.
 void full_matrix_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
                              float* score_ws, float* out);
+
+// Route 2: row-wise. Only a Bq x L window is kept; same result as route 1.
+void rowwise_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                         std::size_t query_block, float* score_ws, float* out);
+
+// Test only: the row order comes from the caller.
+void rowwise_scalar_rows_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                              const std::size_t* rows, std::size_t n_rows, float* score_ws,
+                              float* out);
 
 // q = 0: every output row is the mean of the V rows. Used by the equal-scores case.
 void uniform_attention_reference(const Shape& s, const float* v, double* out);
