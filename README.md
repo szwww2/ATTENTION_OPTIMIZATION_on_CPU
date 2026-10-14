@@ -52,6 +52,8 @@ example -- and push there.
 A pull request then gives the others a chance to look before the work lands on `main`. A quick fix
 can still go straight to `main`.
 
+Writing a weekly note is also useful for the project report.
+
 ## Build and run
 
 ```
