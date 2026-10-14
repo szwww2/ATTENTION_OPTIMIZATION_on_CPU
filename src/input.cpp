@@ -7,7 +7,6 @@ void Tensors::resize(const Shape& s) {
     q.assign(qk_elems(s), 0.0f);
     k.assign(qk_elems(s), 0.0f);
     v.assign(v_elems(s), 0.0f);
-    ws.assign(full_matrix_workspace_elems(s), 0.0f);
     o.assign(v_elems(s), 0.0f);
     o_ref.assign(v_elems(s), 0.0);
 }
