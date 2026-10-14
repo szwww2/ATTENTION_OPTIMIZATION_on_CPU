@@ -1,4 +1,4 @@
-// Shared interface for the attention routes, for the other teammates to implement.
+// Shared interface for the attention routes.
 // O = softmax(QK^T/sqrt(d))V, FP32, non-causal, single head, batch 1.
 // Checked against the FP64 oracle: |O - O64| <= 1e-4 + 1e-3|O64|.
 #pragma once
