@@ -16,14 +16,10 @@ scalar everywhere: `-O3 -fno-tree-vectorize`. SIMD and threads flags are in `doc
 
 ## PyTorch
 
-Li Ruiqin's machine, 2026-10-14. Python 3.12.7 (Anaconda base), numpy 1.26.4.
-
-| environment | torch |
-|---|---|
-| audiobook | 2.8.0+cu128, CUDA available |
-| ceg5304 | 2.13.0+cu130, CUDA available |
-| drones | 2.14.0+cpu |
-| base, bigmodel, ceg5205, ceg5306, pianist | not installed |
+Li Ruiqin's machine, 2026-10-14. Python 3.12.7 with numpy 1.26.4. torch is installed in a couple of
+environments here (2.8.0 and 2.13.0 with CUDA, 2.14.0 CPU only), so the SDPA comparison can run on
+this machine. The CPU-only build is the one to use; the version and the backend go in the report next
+to the numbers.
 
 ## Run output
 
