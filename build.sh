@@ -10,16 +10,18 @@ BASEFLAGS="$STD -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude"
 
 mkdir -p build
 
-echo "[1/4] tests   : build/attn_tests   (route 1, contract suite)"
-$CXX $BASEFLAGS $SRC tests/test_contract.cpp -o build/attn_tests
+echo "[1/4] tests   : build/attn_tests   (both scalar routes, contract suite)"
+"$CXX" $BASEFLAGS $SRC tests/test_contract.cpp -o build/attn_tests
 
 echo "[2/4] harness : build/attn_bench   (scalar, -fno-tree-vectorize)"
-$CXX $BASEFLAGS $SRC tools/bench_scalar.cpp -o build/attn_bench
+"$CXX" $BASEFLAGS $SRC tools/bench_scalar.cpp -o build/attn_bench
 
 echo "[3/4] dump    : build/attn_dump    (cross-check helper)"
-$CXX $BASEFLAGS $SRC tools/dump_case.cpp -o build/attn_dump
+"$CXX" $BASEFLAGS $SRC tools/dump_case.cpp -o build/attn_dump
 
 echo "[4/4] blocks  : build/attn_blocks  (route 2, block sizes and row order)"
-$CXX $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
+"$CXX" $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
 
+echo "flags=$BASEFLAGS" > build/scalar_build.txt
+"$CXX" --version >> build/scalar_build.txt
 echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks"

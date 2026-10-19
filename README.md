@@ -5,6 +5,18 @@ Memory-Performance Trade-offs of Blocked and Streaming Attention on a CPU
 Welcome to CEG5206 team project, Team GP8! Group members are: Li Ruiqin, Cui Ziwei, Tang Zhenxiong, Chen Caoyu.
 Deadline 13 Nov 2026, 23:59.
 
+## 测试工具进度（陈曹玉）
+
+这次补的是统一测试和计时工具：把已有的全矩阵版、逐行版放到同一套程序里，用相同输入检查结果、测运行时间，并自动保存结果表和电脑配置。后面接入优化版后，可以按同一套规则比较。
+
+- **已完成：** 两个标量版本的正确性检查、预热和重复计时、结果保存，以及工具自身的测试；已在本地 Windows 跑通，并上传一组 L=128、512 的示例数据。
+- **有什么用：** 大家不用各写一套计时程序；后续比较各版本速度、整理图表和写实验报告，都能用这套工具输出的数据。
+- **接下来：** 扩展到提案要求的全部实验配置，接入分块、SIMD 和多线程版本，再做性能比较与分析。PyTorch 对照和 roofline 按环境可行性推进。
+
+目前完成了测试工具的第一版，完整性能实验和分析还没完成。新版本接入时需要对应的调用接口、工作区需求和运行参数。
+
+[运行方法](docs/SCALAR_BENCHMARK.md) · [已跑的示例结果](examples/scalar_20261020/README.md)
+
 ## Objectives
 
 Study how optimization choices affect the performance of scaled dot-product attention on a CPU, under one
@@ -59,20 +71,25 @@ Writing a weekly note is also useful for the project report.
 ```
 build.bat                    # Windows (MSYS2 g++)
 bash build.sh                # Linux / macOS
-build\attn_tests.exe         # route 1 contract suite, has to end with SUITE PASSED
+build\attn_tests.exe         # both scalar routes; must end with SUITE PASSED
 build\attn_blocks.exe        # route 2, block sizes and row orders, bit for bit
-build\attn_bench.exe         # timing, L = 128 ... 2048
+python tools/run_scalar_bench.py --out results/run1  # both scalar routes, L=128 and 512
 ```
 
 On Linux or macOS the binaries drop the .exe suffix.
 
-The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
-baseline there is nothing left for the SIMD level to be compared against.
+The small harness validates both routes before timing, alternates their order, and saves
+raw samples, median/IQR, numerical error, workspace and environment information. It refuses
+to overwrite earlier outputs. See [benchmark instructions](docs/SCALAR_BENCHMARK.md).
+A small local example with raw samples and its limitations is in [examples/scalar_20261020](examples/scalar_20261020/README.md).
+`python tests/test_benchmark.py build/attn_bench.exe` independently checks the CSV statistics
+and invalid-argument handling (use `build/attn_bench` on Linux/macOS).
+`python tests/test_contract_gate.py` builds a separate fault-injection binary to verify
+that finite errors, NaN, and a failed final check cannot produce performance CSVs.
 
-## Use of generative AI
+The full-matrix scalar route materializes the complete score matrix, normalizes all rows
+in place to form P, then computes P*V. Rowwise uses the same row arithmetic but completes
+each query row immediately. This phase-order correction changes the baseline; measurements
+from older binaries should be kept separate.
 
-Generative AI was used for language clarity, discussion of the plan, and drafting parts of the baseline code
-and tests.
-
-The team owns the design, implementation, experiments and interpretation, and each member can
-explain their own part.
+The scalar build uses -O3 -fno-tree-vectorize to keep automatic vectorization out of the baseline. SIMD variants are measured separately.

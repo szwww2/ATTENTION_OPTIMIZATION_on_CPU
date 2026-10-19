@@ -34,11 +34,13 @@ struct Case {
     const char* why;
 };
 
-void run_case(const Case& c) {
+void run_case(const Case& c, bool rowwise) {
     attn::Shape s{c.L, c.d, c.dv};
     attn::Tensors t;
     t.resize(s);
-    t.ws.assign(attn::full_matrix_workspace_elems(s), 0.0f);
+    const std::size_t bq = std::min<std::size_t>(64, s.L);
+    t.ws.assign(rowwise ? attn::rowwise_workspace_elems(s, bq)
+                        : attn::full_matrix_workspace_elems(s), 0.0f);
     t.fill_qkv(c.seed);
     if (c.zero_q) std::fill(t.q.begin(), t.q.end(), 0.0f);
     if (c.q_scale != 1.0f) {
@@ -46,7 +48,13 @@ void run_case(const Case& c) {
     }
 
     attn::oracle_fp64(s, t.q.data(), t.k.data(), t.v.data(), t.o_ref.data());
-    attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), t.o.data());
+    const auto run = [&](float* out) {
+        if (rowwise)
+            attn::rowwise_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq, t.ws.data(), out);
+        else
+            attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), out);
+    };
+    run(t.o.data());
     const attn::ErrorReport r =
         attn::check_contract(t.o.data(), t.o_ref.data(), t.o.size(), attn::Contract{});
 
@@ -69,7 +77,7 @@ void run_case(const Case& c) {
 
     if (c.repeat) {
         std::vector<float> second(t.o.size(), 12345.678f);  // sentinel: must be fully overwritten
-        attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), second.data());
+        run(second.data());
         note(std::memcmp(second.data(), t.o.data(), t.o.size() * sizeof(float)) == 0,
              std::string(c.name) + ": repeated call is bitwise identical");
         bool sentinel_left = false;
@@ -99,7 +107,10 @@ int main() {
         for (std::uint64_t seed = 1; seed <= 3; ++seed) {
             Case cc = c;
             cc.seed = seed;
-            run_case(cc);
+            for (bool rowwise : {false, true}) {
+                std::printf("  route=%s\n", rowwise ? "rowwise" : "full_matrix");
+                run_case(cc, rowwise);
+            }
         }
     }
 
@@ -110,7 +121,11 @@ int main() {
          "score spread ~ +/-130: max subtraction must keep exp finite"},
         {"repeated_calls", 256, 64, 64, 1, 1.0f, false, true, "determinism + output overwrite"},
     };
-    for (const Case& c : specials) run_case(c);
+    for (const Case& c : specials)
+        for (bool rowwise : {false, true}) {
+            std::printf("  route=%s\n", rowwise ? "rowwise" : "full_matrix");
+            run_case(c, rowwise);
+        }
 
     std::printf("\n%d checks, %d failures -> %s\n", checks, failures,
                 failures == 0 ? "SUITE PASSED" : "SUITE FAILED");
