@@ -28,7 +28,7 @@ struct Case {
     float q_scale;  // multiplies q after generation (stability stress when large)
 };
 
-const std::size_t kBlockSizes[] = {1, 2, 3, 5, 7, 16, 33, 64, 128, 512};
+const std::size_t kBlockSizes[] = {1, 0, 2, 3, 5, 7, 16, 33, 64, 128, 512};
 
 // fixed-seed shuffle, so the order repeats
 void shuffle_rows(std::vector<std::size_t>& v, std::uint64_t seed) {
@@ -57,9 +57,12 @@ void run_case(const Case& c) {
 
     for (std::size_t bq : kBlockSizes) {
         const std::size_t ws_elems = attn::rowwise_workspace_elems(s, bq);
-        std::vector<float> ws(ws_elems);
+        note(ws_elems == (bq == 0 ? 1 : bq) * s.L,
+             std::string(c.name) + ": workspace matches effective Bq");
+        std::vector<float> ws(ws_elems + 1, 12345.678f);
         std::vector<float> out(t.o.size(), 12345.678f);  // sentinel: must be overwritten
         attn::rowwise_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq, ws.data(), out.data());
+        note(ws.back() == 12345.678f, std::string(c.name) + ": workspace guard unchanged");
 
         const attn::ErrorReport r =
             attn::check_contract(out.data(), t.o_ref.data(), out.size(), attn::Contract{});
@@ -164,7 +167,7 @@ int main() {
 
     // workspace comparison
     std::printf("\nworkspace required by the row-wise route (floats) vs the full-matrix route\n");
-    std::printf("%8s %12s %12s %12s %10s\n", "L", "Bq=1", "Bq=64", "L*L", "Bq=64/L^2");
+    std::printf("%8s %12s %12s %12s %10s\n", "L", "Bq=1", "Bq=64", "L*L", "L^2/(Bq=64)");
     const std::size_t sizes[] = {128, 512, 1024, 2048};
     for (std::size_t L : sizes) {
         attn::Shape s{L, 64, 64};

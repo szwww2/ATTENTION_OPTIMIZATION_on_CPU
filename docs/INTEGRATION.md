@@ -43,11 +43,13 @@ Route 3 is the one whose answer depends on how the work is cut up, so it needs t
 second entry point that takes the block schedule from the caller, and a test that runs the same input with
 different block sizes and block orders -- including sizes that do not divide L and sizes bigger than L.
 
-Online softmax cannot be bitwise stable across block sizes, so those runs will not match exactly. Each run only
+Online softmax may differ bitwise because of rounding across block sizes, so those runs will not match exactly. Each run only
 has to be within one tolerance of the same FP64 answer, `|O(Bk=a) - O(Bk=b)| <= 2 * (atol + rtol * |O64|)`.
 
-The first non-empty block has to set (m, l, a) straight from it. Merging into empty accumulators means -inf
-minus -inf, and at L = 1 a division by zero.
+Initialize (m, l, a) directly from the first non-empty block, as specified in the proposal.
+Starting with (-inf, 0, 0) can also be mathematically valid when the first block has a finite maximum:
+the old contribution is scaled by exp(-inf - finite) = 0. It does not inherently fail at L = 1.
+Empty or all-masked blocks need separate handling; do not evaluate -inf - (-inf).
 
 ## Tools
 

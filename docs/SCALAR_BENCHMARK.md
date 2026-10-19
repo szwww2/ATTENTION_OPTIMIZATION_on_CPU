@@ -32,6 +32,9 @@ On Linux/macOS, build with `bash build.sh`, use binaries without `.exe`, and pas
 `build/attn_bench` to the Python test. That platform still needs its own validation.
 On Windows `CXX` may select an existing compiler; otherwise the build uses `g++`.
 No additional Python packages are needed.
+The optional independent NumPy checker needs NumPy: run `python tests/test_crosscheck.py`
+after building. It checks a valid dump and deliberately corrupts C++ FP32 output to
+verify that finite errors, NaN and infinity cannot be reported as passed.
 The fault-gate test uses the same C++ compiler, selected by `CXX` or found as `g++`.
 It builds a separate test binary; the injected route is never in the normal build.
 

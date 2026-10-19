@@ -10,7 +10,7 @@ set BASEFLAGS=%STD% -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude
 
 if not exist build mkdir build
 
-echo [1/4] tests   : attn_tests.exe   (route 1, contract suite)
+echo [1/4] tests   : attn_tests.exe   (both scalar routes, contract suite)
 "%CXX%" %BASEFLAGS% %SRC% tests\test_contract.cpp -o build\attn_tests.exe
 if errorlevel 1 exit /b 1
 

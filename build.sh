@@ -10,7 +10,7 @@ BASEFLAGS="$STD -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude"
 
 mkdir -p build
 
-echo "[1/4] tests   : build/attn_tests   (route 1, contract suite)"
+echo "[1/4] tests   : build/attn_tests   (both scalar routes, contract suite)"
 "$CXX" $BASEFLAGS $SRC tests/test_contract.cpp -o build/attn_tests
 
 echo "[2/4] harness : build/attn_bench   (scalar, -fno-tree-vectorize)"

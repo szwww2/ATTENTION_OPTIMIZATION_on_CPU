@@ -20,7 +20,8 @@ inline std::size_t v_elems(const Shape& s) { return s.L * s.dv; }
 // Workspace size in floats.
 inline std::size_t full_matrix_workspace_elems(const Shape& s) { return s.L * s.L; }
 inline std::size_t rowwise_workspace_elems(const Shape& s, std::size_t query_block) {
-    return query_block * s.L;
+    // Match the kernel's legacy fallback: Bq=0 means one row.
+    return (query_block == 0 ? 1 : query_block) * s.L;
 }
 
 // Buffers for one call.

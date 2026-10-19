@@ -91,3 +91,7 @@ the baseline code.
 For my benchmark contribution, I used OpenAI Codex to help implement the scalar phase-order
 correction, benchmark harness, environment runner, tests and documentation, and to run
 the recorded local checks. I am responsible for the content and quality of the submitted work.
+
+## Current scalar increment
+
+See [current scope and review guide](docs/CURRENT_INCREMENT.md) for what this increment completes, how to inspect its outputs, and what remains.
