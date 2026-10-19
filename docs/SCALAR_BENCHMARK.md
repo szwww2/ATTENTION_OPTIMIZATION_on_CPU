@@ -42,12 +42,16 @@ It builds a separate test binary; the injected route is never in the normal buil
 To try a small odd shape without changing code:
 
 ```text
-python tools/run_scalar_bench.py --out results/odd --L 7 --d 3 --dv 5 --query-block 3 --warmup 2 --reps 7 --seed 42
+python tools/run_scalar_bench.py --out results/odd --L 31 --d 31 --dv 33 --query-block 3 --warmup 2 --reps 7 --seed 42
 ```
 
 `build/attn_bench --help` lists the options and bounds. `--L` selects one length;
 without it the two default lengths run. Direct execution also works, but the Python
 runner additionally saves the environment. `--csv` prints the summary CSV to stdout.
+Very small inputs can finish within a timer tick on some platforms. A zero-time sample
+is rejected as `Invalid timer sample`; it is not replaced with a made-up positive time.
+The benchmark tests use L=31, d=31, dv=33 to avoid that timing limitation. The original
+numerical tests still cover tiny shapes without relying on timer resolution.
 
 ## Files and code blocks | 文件与代码块
 

@@ -24,9 +24,11 @@ class BenchmarkTests(unittest.TestCase):
     def test_odd_shape_statistics_and_metadata(self):
         with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
             prefix = Path(folder) / "odd"
-            command = [str(BINARY), "--L", "7", "--d", "3", "--dv", "5", "--seed", "42",
+            # Stay above coarse clock ticks; numerical suites still cover L=1 and L=7.
+            command = [str(BINARY), "--L", "31", "--d", "31", "--dv", "33", "--seed", "42",
                        "--warmup", "2", "--reps", "7", "--query-block", "3", "--out", "odd"]
-            subprocess.run(command, cwd=folder, check=True, capture_output=True)
+            run = subprocess.run(command, cwd=folder, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
             with open(str(prefix) + "_raw.csv", newline="") as f:
                 raw = list(csv.DictReader(f))
             with open(str(prefix) + "_summary.csv", newline="") as f:
@@ -41,14 +43,14 @@ class BenchmarkTests(unittest.TestCase):
                 q1, _, q3 = statistics.quantiles(times, method="inclusive")
                 expected = [("median_ms", statistics.median(times)), ("min_ms", min(times)),
                             ("q1_ms", q1), ("q3_ms", q3), ("iqr_ms", q3-q1),
-                            ("gflops", 2*7*7*(3+5)/(statistics.median(times)*1e6))]
+                            ("gflops", 2*31*31*(31+33)/(statistics.median(times)*1e6))]
                 for field, value in expected:
                     self.assertTrue(math.isclose(float(r[field]), value, rel_tol=1e-12, abs_tol=1e-12), field)
                 self.assertEqual(r["contract_pass"], "1")
                 self.assertEqual(r["seed"], "42")
                 for field in ["pre_max_abs", "pre_max_rel", "post_max_abs", "post_max_rel"]:
                     self.assertTrue(math.isfinite(float(r[field])))
-                self.assertEqual(int(r["workspace_bytes"]), (7*7 if r["route"] == "full_matrix" else 3*7)*4)
+                self.assertEqual(int(r["workspace_bytes"]), (31*31 if r["route"] == "full_matrix" else 3*31)*4)
                 index = 0 if r["route"] == "full_matrix" else 1
                 self.assertEqual([int(x["order"]) for x in samples], [(index+i)%2 for i in range(7)])
             old = {suffix: Path(str(prefix) + suffix).read_bytes()
@@ -74,8 +76,9 @@ class RunnerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
             prefix = Path(folder) / "recorded"
             command = [sys.executable, str(ROOT / "tools/run_scalar_bench.py"), "--out", str(prefix),
-                       "--L", "3", "--d", "3", "--dv", "2", "--warmup", "1", "--reps", "3"]
-            subprocess.run(command, check=True, capture_output=True)
+                       "--L", "31", "--d", "31", "--dv", "33", "--warmup", "1", "--reps", "3"]
+            run = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
             path = Path(str(prefix) + "_environment.json")
             original = path.read_bytes()
             metadata = json.loads(original)

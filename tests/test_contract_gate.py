@@ -32,7 +32,7 @@ class ContractGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=TEST_TEMP) as folder:
             env = dict(os.environ, ATTN_TEST_FAIL_AT=str(fail_at), ATTN_TEST_FAILURE=mode)
             # Each route has 1 pre-check + 2 warmups + 3 timed calls. Call 6 is last.
-            run = subprocess.run([str(self.binary), "--L", "7", "--d", "3", "--dv", "5",
+            run = subprocess.run([str(self.binary), "--L", "31", "--d", "31", "--dv", "33",
                                   "--warmup", "2", "--reps", "3", "--out", "failed"],
                                  cwd=folder, env=env, capture_output=True, text=True)
             self.assertNotEqual(run.returncode, 0)
