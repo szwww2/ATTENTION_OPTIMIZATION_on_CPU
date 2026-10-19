@@ -69,6 +69,7 @@ On Linux or macOS the binaries drop the .exe suffix.
 The small harness validates both routes before timing, alternates their order, and saves
 raw samples, median/IQR, numerical error, workspace and environment information. It refuses
 to overwrite earlier outputs. See [the run guide and code walkthrough](docs/SCALAR_BENCHMARK.md).
+A small local example with raw samples and its limitations is in [examples/scalar_20261020](examples/scalar_20261020/README.md).
 `python tests/test_benchmark.py build/attn_bench.exe` independently checks the CSV statistics
 and invalid-argument handling (use `build/attn_bench` on Linux/macOS).
 `python tests/test_contract_gate.py` builds a separate fault-injection binary to verify

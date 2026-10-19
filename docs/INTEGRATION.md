@@ -51,13 +51,14 @@ minus -inf, and at L = 1 a division by zero.
 
 ## Tools
 
-`tools/bench_scalar.cpp` times route 1 only, so a second route has to be added to it. It warms up, repeats,
-prints the median and the minimum, and re-checks the contract on the last run. `--csv` gives one line per shape:
-`L,d,dv,reps,median_ms,min_ms,gflops,workspace_MB,roundtrip_max_abs`.
+`tools/bench_scalar.cpp` now times both scalar routes on the same Q/K/V buffers. Both routes pass the
+FP64 contract before warm-up; timed rounds alternate which route runs first. A final contract check must
+pass before raw and summary CSVs are written. `tools/run_scalar_bench.py` also records the environment.
+See [SCALAR_BENCHMARK.md](SCALAR_BENCHMARK.md) for the timing boundary, columns and integration points.
 
-The median at small L is the noisy one: two runs of the same binary gave 0.713 ms and 0.508 ms at L = 128, while
-the minimum stayed at 0.502. That is warm-up, not the kernel, and it wants settling before these numbers go into
-the report.
+Earlier timings used a different phase order in the full-matrix baseline and are not results for this
+version. Warm-up and alternating order reduce some bias, but do not remove background load, frequency
+changes or scheduling effects. Record the spread rather than attributing it to one cause without evidence.
 
 `tools/dump_case.cpp` writes one case out as text files and `tools/crosscheck_numpy.py` recomputes it in NumPy,
 comparing the generator (must be bit-identical), the FP64 result against the oracle, and the FP32 result against
