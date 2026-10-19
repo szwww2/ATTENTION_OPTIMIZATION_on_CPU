@@ -59,7 +59,7 @@ Writing a weekly note is also useful for the project report.
 ```
 build.bat                    # Windows (MSYS2 g++)
 bash build.sh                # Linux / macOS
-build\attn_tests.exe         # route 1 contract suite, has to end with SUITE PASSED
+build\attn_tests.exe         # both scalar routes; must end with SUITE PASSED
 build\attn_blocks.exe        # route 2, block sizes and row orders, bit for bit
 python tools/run_scalar_bench.py --out results/run1  # both scalar routes, L=128 and 512
 ```
@@ -68,7 +68,7 @@ On Linux or macOS the binaries drop the .exe suffix.
 
 The small harness validates both routes before timing, alternates their order, and saves
 raw samples, median/IQR, numerical error, workspace and environment information. It refuses
-to overwrite earlier outputs. See [the run guide and code walkthrough](docs/SCALAR_BENCHMARK.md).
+to overwrite earlier outputs. See [benchmark instructions](docs/SCALAR_BENCHMARK.md).
 A small local example with raw samples and its limitations is in [examples/scalar_20261020](examples/scalar_20261020/README.md).
 `python tests/test_benchmark.py build/attn_bench.exe` independently checks the CSV statistics
 and invalid-argument handling (use `build/attn_bench` on Linux/macOS).
@@ -80,18 +80,4 @@ in place to form P, then computes P*V. Rowwise uses the same row arithmetic but 
 each query row immediately. This phase-order correction changes the baseline; measurements
 from older binaries should be kept separate.
 
-The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
-baseline there is nothing left for the SIMD level to be compared against.
-
-## AI-use declaration
-
-We used generative AI for language clarity, discussion of the plan, and drafting parts of
-the baseline code.
-
-For my benchmark contribution, I used OpenAI Codex to help implement the scalar phase-order
-correction, benchmark harness, environment runner, tests and documentation, and to run
-the recorded local checks. I am responsible for the content and quality of the submitted work.
-
-## Current scalar increment
-
-See [current scope and review guide](docs/CURRENT_INCREMENT.md) for what this increment completes, how to inspect its outputs, and what remains.
+The scalar build uses -O3 -fno-tree-vectorize to keep automatic vectorization out of the baseline. SIMD variants are measured separately.
