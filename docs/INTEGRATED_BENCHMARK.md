@@ -58,3 +58,5 @@ SIMD/OpenMP kernels and their tests originate from Tang Zhenxiong's branch at `f
 - Scalar and SIMD cases in the comparison come from this integrated build. Earlier Tang/Chen measurements are kept separate.
 
 CPU affinity and power mode are not controlled by these scripts. Repeat runs under documented conditions before making final performance claims. Workspace bytes are not measured DRAM traffic.
+
+After a grid completes, use [RESULT_ANALYSIS.md](RESULT_ANALYSIS.md) to check its saved records and produce comparison plots.

@@ -13,6 +13,8 @@ Deadline 13 Nov 2026, 23:59.
 
 首轮已跑完现有路线的 40 个配置，800 次计时已保存，全部通过计时前后的正确性检查。小尺寸波动较大，性能结论还需要复测。[查看这轮数据和条件](examples/integrated_20261021/README.md)。
 
+新增结果分析脚本：核对原始数据后，生成速度、线程数和临时空间的比较图，以及统一结果表。[看图和本轮结论](examples/integrated_20261021/analysis/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
+
 [六版本的运行方法](docs/INTEGRATED_BENCHMARK.md) · [结果字段说明](docs/SCALAR_BENCHMARK.md) · [第一阶段示例](examples/scalar_20261020/README.md)
 
 ## Objectives
