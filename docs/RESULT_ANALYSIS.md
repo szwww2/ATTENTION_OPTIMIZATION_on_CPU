@@ -35,3 +35,15 @@ Files are found next to the manifest using each job's id. Historical `prefix` pa
 ## Interpreting the first run
 
 See [the plotted first-run results](../examples/integrated_20261021/analysis/README.md). CPU affinity and power mode were uncontrolled. Repeat the noisier configurations under documented conditions before final conclusions. A smaller workspace does not establish lower DRAM traffic, and the SIMD comparison includes a different PV loop order as well as vector instructions. Reported GFLOP/s uses the two matrix products' operation count over complete kernel time, including softmax and resets.
+# Repeated runs
+
+Keep each complete run in a new directory. Once the runs have finished, compare
+their medians without pooling all samples into one larger run:
+
+```sh
+python tools/analyze_repeats.py --input results/run1 results/run2 results/run3 --out results/repeat_analysis
+```
+
+The analyzer checks each original grid first, requires the same build and
+recorded environment, then exports the medians and IQRs of each run. The range
+between run medians describes variation; it is not a confidence interval.

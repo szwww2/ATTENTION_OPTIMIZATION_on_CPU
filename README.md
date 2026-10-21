@@ -56,6 +56,12 @@ masking and KV-cache decoding are outside the project.
 
 Each owner supplies their own tests, measurements and figures; the report is written together.
 
+Chen's benchmark work now includes the shared scalar/SIMD/OpenMP tests, saved-result
+checks and plots, an allocating PyTorch CPU comparison, and a roofline reference
+experiment. Run instructions: [native results](docs/RESULT_ANALYSIS.md),
+[PyTorch](docs/PYTORCH_COMPARISON.md), [roofline](docs/ROOFLINE_REFERENCE.md).
+Blocked streaming will join the same tests when its implementation is ready.
+
 ## How we work
 
 `main` is shared, so please be careful: work on a dev branch of your own -- `dev/liruiqin` as an
