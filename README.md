@@ -62,12 +62,23 @@ bash build.sh                # Linux / macOS
 build\attn_tests.exe         # route 1 contract suite, has to end with SUITE PASSED
 build\attn_blocks.exe        # route 2, block sizes and row orders, bit for bit
 build\attn_bench.exe         # timing, L = 128 ... 2048
+build\attn_simd_kernels_tests.exe # AVX2 dot and value-accumulation checks
+build\attn_simd_tests.exe   # full-matrix and row-wise SIMD contract suite
+build\attn_omp_tests.exe    # static OpenMP correctness and workspace checks
+build\attn_bench_tang.exe   # Tang's two-route scalar/SIMD/OpenMP timing CSV
 ```
 
 On Linux or macOS the binaries drop the .exe suffix.
 
 The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
 baseline there is nothing left for the SIMD level to be compared against.
+The SIMD and OpenMP test binaries require an AVX2-capable CPU. OpenMP uses static query-block scheduling.
+The Tang benchmark takes `L Bq warmups reps max_threads` (for example, `128 16 5 51 8`)
+and emits CSV for both available routes; `max_threads` selects powers of two from 1 up to that value.
+On an x64 Visual Studio Developer Command Prompt, `tools\build_tang_msvc.bat`
+builds the local MSVC comparison and CPU-topology diagnostic.
+See `docs/EXPERIMENT_PHASE3_TANGZHENXIONG.md` for the measured setup and caveats;
+the full-matrix SIMD route now uses three whole-matrix phases.
 
 ## Use of generative AI
 

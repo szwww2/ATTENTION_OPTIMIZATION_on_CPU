@@ -20,7 +20,14 @@ inline std::size_t v_elems(const Shape& s) { return s.L * s.dv; }
 // Workspace size in floats.
 inline std::size_t full_matrix_workspace_elems(const Shape& s) { return s.L * s.L; }
 inline std::size_t rowwise_workspace_elems(const Shape& s, std::size_t query_block) {
-    return query_block * s.L;
+    const std::size_t bq = (query_block == 0) ? 1 : query_block;
+    return bq * s.L;
+}
+inline std::size_t rowwise_omp_workspace_elems(const Shape& s, std::size_t query_block,
+                                               int threads) {
+    const std::size_t bq = (query_block == 0) ? 1 : query_block;
+    const std::size_t workers = (threads > 0) ? static_cast<std::size_t>(threads) : 1;
+    return workers * bq * s.L;
 }
 
 // Buffers for one call.
@@ -54,9 +61,27 @@ void oracle_fp64(const Shape& s, const float* q, const float* k, const float* v,
 void full_matrix_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
                              float* score_ws, float* out);
 
+// SIMD routes use shared AVX2 dot-product and value-accumulation helpers.
+// Compile these routes with AVX2 enabled; workspace sizes match scalar routes.
+void full_matrix_simd_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                           float* score_ws, float* out);
+
 // Route 2: row-wise. Only a Bq x L window is kept; same result as route 1.
 void rowwise_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
                          std::size_t query_block, float* score_ws, float* out);
+
+void rowwise_simd_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                       std::size_t query_block, float* score_ws, float* out);
+
+// Static OpenMP query-block routes. The caller allocates workspace before
+// timing and passes the requested positive thread count.
+void full_matrix_simd_omp_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                               std::size_t query_block, int threads,
+                               float* score_ws, float* out);
+
+void rowwise_simd_omp_fp32(const Shape& s, const float* q, const float* k, const float* v,
+                           std::size_t query_block, int threads,
+                           float* score_ws, float* out);
 
 // Test only: the row order comes from the caller.
 void rowwise_scalar_rows_fp32(const Shape& s, const float* q, const float* k, const float* v,
