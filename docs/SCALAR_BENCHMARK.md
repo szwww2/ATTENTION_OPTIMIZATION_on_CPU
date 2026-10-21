@@ -78,8 +78,8 @@ The environment records the whole working tree's dirty status. Hashes identify s
 | Column | Meaning |
 | --- | --- |
 | `route,L,d,dv,seed` | Implementation and input configuration |
-| `query_block` | Effective rowwise Bq=min(requested Bq,L); 0 for full-matrix |
-| `sample,order,ms` | Zero-based sample index, first/second in the round (0/1), and elapsed milliseconds |
+| `query_block` | Effective Bq=min(requested Bq,L) for rowwise and full-matrix OpenMP; 0 for serial full-matrix |
+| `sample,order,ms` | Zero-based sample index, position within the round (0..N-1 for N selected variants), and elapsed milliseconds |
 | `warmup,reps` | Additional warm-up calls and timed calls per route |
 | `median_ms,min_ms` | Median and minimum elapsed time |
 | `q1_ms,q3_ms,iqr_ms` | Quartiles and Q3-Q1 |
@@ -89,7 +89,7 @@ The environment records the whole working tree's dirty status. Hashes identify s
 | `contract_pass` | Both numerical checks passed |
 
 Quartiles use linear interpolation at position `p*(n-1)` in sorted samples.
-Group raw samples by route, L, d, dv, seed and query_block to reproduce each summary; each group contains `reps` samples.
+Group raw samples by route, mode, threads, L, d, dv, seed and query_block to reproduce each summary; each group contains `reps` samples. Scalar-only runs have two variants; integrated runs may have two, four or six.
 
 The numerical check requires finite outputs and `abs(diff) <= 1e-4 + 1e-3*abs(ref)` for every element.
 A large maximum relative error near a zero reference does not by itself mean this contract failed.

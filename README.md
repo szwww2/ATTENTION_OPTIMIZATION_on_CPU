@@ -11,6 +11,8 @@ Deadline 13 Nov 2026, 23:59.
 
 本次接入了唐振雄的优化代码，补齐多线程工作区、线程数核对和六版本轮换计时，并对齐了逐行版的归一化顺序。新增实验脚本可运行这两条路线对应的提案尺寸和线程配置；分块版仍待接入，PyTorch 和 roofline 后续按环境推进。
 
+首轮已跑完现有路线的 40 个配置，800 次计时已保存，全部通过计时前后的正确性检查。小尺寸波动较大，性能结论还需要复测。[查看这轮数据和条件](examples/integrated_20261021/README.md)。
+
 [六版本的运行方法](docs/INTEGRATED_BENCHMARK.md) · [结果字段说明](docs/SCALAR_BENCHMARK.md) · [第一阶段示例](examples/scalar_20261020/README.md)
 
 ## Objectives
