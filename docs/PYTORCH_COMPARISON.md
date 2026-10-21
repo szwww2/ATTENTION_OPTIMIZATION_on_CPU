@@ -22,6 +22,8 @@ allocation/initialization/release, and computation. Inputs, tensor views, oracle
 checks and output release are outside. PyTorch allocates its output and any
 internal temporary storage within its call. These are API costs; compare them
 with one another, not with the allocation-free native benchmark timings.
+Any packing inside the library call is included. The bridge does not convert
+input dtype or layout; creating the shared FP32 tensor views is outside timing.
 
 At T=1 the custom variants use SIMD; at T>1 they use SIMD plus OpenMP. Each case
 uses 10 warmups and 20 measured calls per variant, rotating their order. The

@@ -225,6 +225,8 @@ def main():
         )
         ax.grid(alpha=0.2)
         ax.legend()
+        lengths = sorted({r["L"] for r in rows if r["threads"] == t and r["d"] == 64})
+        ax.set_xticks(lengths, labels=[str(length) for length in lengths])
     fig.suptitle("CPU API time: median and Q1-Q3 (not CI); custom T1=SIMD, T>1=OpenMP", fontsize=13)
     fig.savefig(args.out / "pytorch_api.png", dpi=160)
     plt.close(fig)

@@ -1,0 +1,19 @@
+   1400018e0:	c5 d4 59 e9          	vmulps %ymm1,%ymm5,%ymm5
+   1400018e4:	83 c0 01             	add    $0x1,%eax
+   1400018e7:	c5 c4 59 f9          	vmulps %ymm1,%ymm7,%ymm7
+   1400018eb:	c5 dc 59 e1          	vmulps %ymm1,%ymm4,%ymm4
+   1400018ef:	c5 3c 59 c1          	vmulps %ymm1,%ymm8,%ymm8
+   1400018f3:	c5 cc 59 f1          	vmulps %ymm1,%ymm6,%ymm6
+   1400018f7:	c5 34 59 c9          	vmulps %ymm1,%ymm9,%ymm9
+   1400018fb:	c5 d4 58 e8          	vaddps %ymm0,%ymm5,%ymm5
+   1400018ff:	c5 ec 59 d1          	vmulps %ymm1,%ymm2,%ymm2
+   140001903:	c5 c4 58 f8          	vaddps %ymm0,%ymm7,%ymm7
+   140001907:	c5 e4 59 d9          	vmulps %ymm1,%ymm3,%ymm3
+   14000190b:	c5 dc 58 e0          	vaddps %ymm0,%ymm4,%ymm4
+   14000190f:	c5 3c 58 c0          	vaddps %ymm0,%ymm8,%ymm8
+   140001913:	c5 cc 58 f0          	vaddps %ymm0,%ymm6,%ymm6
+   140001917:	c5 34 58 c8          	vaddps %ymm0,%ymm9,%ymm9
+   14000191b:	c5 ec 58 d0          	vaddps %ymm0,%ymm2,%ymm2
+   14000191f:	c5 e4 58 d8          	vaddps %ymm0,%ymm3,%ymm3
+   140001923:	39 c1                	cmp    %eax,%ecx
+   140001925:	75 b9                	jne    1400018e0 <_Z10arithmetici+0x80>
