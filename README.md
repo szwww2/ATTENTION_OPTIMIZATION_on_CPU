@@ -5,23 +5,32 @@ Memory-Performance Trade-offs of Blocked and Streaming Attention on a CPU
 Welcome to CEG5206 team project, Team GP8! Group members are: Li Ruiqin, Cui Ziwei, Tang Zhenxiong, Chen Caoyu.
 Deadline 13 Nov 2026, 23:59.
 
-## 测试工具进度（陈曹玉）
+## 本轮实验结果（陈曹玉）
 
-统一测试工具已接入全矩阵、逐行、分块三条路线的普通版、SIMD 版和 OpenMP 版，共九种实现。它们用相同输入验答案、计时，自动保存原始数据、汇总表和运行环境。
+已把三条路线的普通、SIMD 和 OpenMP 版接进统一测试，共九种实现。它们用相同输入检查答案，再计时。10 月 23 日完成三轮主实验，每轮 60 个配置，共 3,600 次原始计时；PyTorch CPU 对照、roofline 和线程效率也已整理好。
 
-10 月 23 日完成三轮完整测试，每轮 60 个配置，共保存 3,600 次原始计时。先固定 Bq=16，比较 Bk=128/256/512，再按预定规则选用 Bk=128。PyTorch CPU 对照、带宽与计算参考实验也已完成。[结果、图表和原始数据](examples/controlled_20261023/README.md)
+**先看下面的结果总览，再看需要的代码或数据。**
 
-这批结果可用于讨论和写报告，但小尺寸仍有明显波动。在 L=4096、d=dv=64 时，三条路线在这台电脑上都是 4 线程比 8 线程快，不能推广成所有电脑的结论。Roofline 使用假设的内存流量；目前没有实测 DRAM 流量。[完整运行方法](docs/CONTROLLED_STUDY.md)
+| 内容 | 从这里看 |
+|---|---|
+| 结果总览、比较图、原始数据 | [三轮实验](examples/controlled_20261023/README.md) |
+| 多线程加速后的效率 | [线程效率表](examples/thread_efficiency_20261023/README.md) |
+| Roofline 假设和图 | [Roofline 分析](examples/controlled_20261023/roofline_analysis/README.md) |
+| 我的实验方法与结果段落，供合并进小组报告 | [英文报告草稿](docs/REPORT_CHEN_SECTION_DRAFT.md) |
+| 跑代码、重建图表、查看机器信息 | [九版本测试](docs/INTEGRATED_BENCHMARK.md) · [重建统计和图](examples/controlled_20261023/README.md) · [机器记录](examples/machine_20261023/README.md) |
 
-10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。旧数据单独保留；实际 DRAM 流量尚未测量。
+这台电脑上，L=4096、d=dv=64 时三条路线都是 4 线程比 8 线程快。小尺寸波动较大；roofline 的内存流量是模型估算。具体数据和限制都在结果总览里。
 
-补充的[线程效率表](examples/thread_efficiency_20261023/README.md)直接由这批数据计算，不用重新计时。[英文报告短稿 / Experimental methods and results](docs/REPORT_CHEN_SECTION_DRAFT.md)整理了方法、主要结果和分析限制；[机器记录](examples/machine_20261023/README.md)补上CPU类别与缓存数据。
+代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它包含 #4 的工作，目前仍是草稿、未合并。请大家检查各自路线的接入与结果解释，再确认报告用图并合并到 `main`。看结果不需要重新跑实验；需要检查时可以先用保存的数据重建图表。
 
-当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。PR 直接与 `main` 比较，已包含早期 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 的工作，大家集中看 #5 即可。仍是草稿，尚未合并；接下来共同确认图表和解释，再整理报告。
+<details>
+<summary>以前的实验和详细说明</summary>
 
-分析脚本会先核对原始数据，再生成汇总表和比较图。[首轮历史数据](examples/integrated_20261021/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
+以下是阶段记录，本轮结果以上面的 10 月 23 日三轮实验为准。
 
-[九版本的运行方法](docs/INTEGRATED_BENCHMARK.md) · [结果字段说明](docs/SCALAR_BENCHMARK.md) · [第一阶段示例](examples/scalar_20261020/README.md)
+[第一阶段示例](examples/scalar_20261020/README.md) · [首轮整合实验](examples/integrated_20261021/README.md) · [10 月 22 日两路线复测](examples/validation_20261022/README.md) · [结果字段](docs/SCALAR_BENCHMARK.md) · [分析方法](docs/RESULT_ANALYSIS.md) · [完整实验流程](docs/CONTROLLED_STUDY.md)
+
+</details>
 
 ## Objectives
 
