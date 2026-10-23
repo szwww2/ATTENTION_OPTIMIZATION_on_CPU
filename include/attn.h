@@ -58,6 +58,51 @@ void full_matrix_scalar_fp32(const Shape& s, const float* q, const float* k, con
 void rowwise_scalar_fp32(const Shape& s, const float* q, const float* k, const float* v,
                          std::size_t query_block, float* score_ws, float* out);
 
+// Route 3: scalar blocked streaming. Scratch counts ALL state, in float elements.
+// 正尺寸；Bq/Bk=0按1处理，超过L截为L。非法尺寸/溢出抛出异常。
+std::size_t blocked_streaming_workspace_elems(const Shape& s,
+                                              std::size_t query_block,
+                                              std::size_t key_block);
+
+// 输入只读、各缓冲区不得重叠；调用者按helper预分配scratch和L*dv输出。
+// 有效调用不分配内存，无I/O；覆盖out，scratch初值任意，所有状态在调用内初始化。
+void blocked_streaming_scalar_fp32(const Shape& s,
+                                   const float* q, const float* k, const float* v,
+                                   std::size_t query_block, std::size_t key_block,
+                                   float* workspace, float* out);
+
+// 测试专用：key_blocks为[0,ceil(L/effective_Bk))的完整排列。
+// 在写输出前验证数量/范围/重复；不合法则抛invalid_argument。
+// 验证使用O(n_blocks^2)比较、不分配内存；性能测试使用上面的自然顺序入口。
+void blocked_streaming_scalar_ordered_fp32(const Shape& s,
+                                           const float* q, const float* k, const float* v,
+                                           std::size_t query_block, std::size_t key_block,
+                                           const std::size_t* key_blocks,
+                                           std::size_t n_blocks,
+                                           float* workspace, float* out);
+
+// Route 3优化入口：helper复用单线程全部scratch，AVX2只在独立编译单元开启。
+// CPU/OS不支持AVX2时返回false；计算入口会在写缓冲区前抛runtime_error。
+bool blocked_streaming_avx2_supported();
+void blocked_streaming_simd_fp32(const Shape& s,
+                                 const float* q, const float* k, const float* v,
+                                 std::size_t query_block, std::size_t key_block,
+                                 float* workspace, float* out);
+
+// threads必须>0；返回threads份独立scratch的总float数，检查总字节溢出。
+std::size_t blocked_streaming_omp_workspace_elems(const Shape& s,
+                                                 std::size_t query_block,
+                                                 std::size_t key_block, int threads);
+// 静态分配query块，线程私有scratch；每个query在一个线程上完成所有key块。
+// actual_threads可为空，否则写入本次实际team大小（可能小于请求值）。
+// 不改变全局OpenMP设置；所有缓冲区/actual_threads必须互不重叠。
+// 应用代码不分配，OpenMP运行时可自行分配；计时须包含parallel region。
+void blocked_streaming_simd_omp_fp32(const Shape& s,
+                                     const float* q, const float* k, const float* v,
+                                     std::size_t query_block, std::size_t key_block,
+                                     int threads, float* workspace, float* out,
+                                     int* actual_threads = nullptr);
+
 // Test only: the row order comes from the caller.
 void rowwise_scalar_rows_fp32(const Shape& s, const float* q, const float* k, const float* v,
                               const std::size_t* rows, std::size_t n_rows, float* score_ws,

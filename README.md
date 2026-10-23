@@ -69,6 +69,20 @@ On Linux or macOS the binaries drop the .exe suffix.
 The scalar build keeps -O3 -fno-tree-vectorize on purpose: if the compiler already vectorizes the
 baseline there is nothing left for the SIMD level to be compared against.
 
+## Blocked streaming: scalar, SIMD and OpenMP (Cui Ziwei)
+
+Route 3 is implemented with explicit query/key blocks and online softmax.
+Run `build/attn_streaming_tests` after `bash build.sh` (Windows: `.exe`).
+See [the interface and verification guide](docs/STREAMING_CUIZIWEI.md) and
+[the local scalar tile pilot](examples/streaming_cuiziwei_20261022/README.md).
+SIMD and static OpenMP are now implemented for route 3. Build with
+`python3 -B tools/build_streaming_optimized.py`, then run
+`build/streaming_optimized/test`. See [optimized API/tests](docs/STREAMING_OPTIMIZED.md)
+and [same-build measurements](examples/streaming_optimized_20261022/README.md).
+Integration into the pending shared harness remains a teammate coordination task.
+See [the team review checklist](docs/STREAMING_TEAM_HANDOFF.md) for integration
+ownership, interface decisions and the nine-mode comparison matrix.
+
 ## Use of generative AI
 
 Generative AI was used for language clarity, discussion of the plan, and drafting parts of the baseline code
