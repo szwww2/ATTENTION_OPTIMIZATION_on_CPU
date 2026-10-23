@@ -59,7 +59,7 @@ Writing a weekly note is also useful for the project report.
 ```
 build.bat                    # Windows (MSYS2 g++)
 bash build.sh                # Linux / macOS
-build\attn_tests.exe         # route 1 contract suite, has to end with SUITE PASSED
+build\attn_tests.exe         # all three scalar routes, has to end with SUITE PASSED
 build\attn_blocks.exe        # route 2, block sizes and row orders, bit for bit
 build\attn_bench.exe         # timing, L = 128 ... 2048
 ```
