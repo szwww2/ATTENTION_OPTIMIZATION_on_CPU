@@ -78,7 +78,10 @@ def main():
             metadata["variant_threads"] = [
                 {key: row[key] for key in ("route", "mode", "threads", "actual_threads")}
                 for row in csv.DictReader(stream)]
-        metadata["thread_check_scope"] = "OpenMP preflight team probe; dynamic teams disabled; timed calls not instrumented"
+        metadata["thread_check_scope"] = (
+            "streaming: actual compute team checked per timed call; full/row: preflight probe only; dynamic teams disabled"
+            if "--streaming" in extra else
+            "OpenMP preflight team probe; dynamic teams disabled; timed calls not instrumented")
     metadata.update(finished_utc=datetime.now(timezone.utc).isoformat(), exit_code=run.returncode,
                     status="passed" if run.returncode == 0 else "failed")
     env_file.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")

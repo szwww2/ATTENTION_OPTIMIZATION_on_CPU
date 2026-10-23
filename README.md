@@ -7,9 +7,9 @@ Deadline 13 Nov 2026, 23:59.
 
 ## 测试工具进度（陈曹玉）
 
-统一测试工具现已接入全矩阵、逐行两条路线的普通版、SIMD 版和 OpenMP 版，共六种实现。它们用相同输入验答案、计时，自动保存原始数据、汇总表和运行环境。
+统一测试工具已接入全矩阵、逐行、分块三条路线的普通版、SIMD 版和 OpenMP 版，共九种实现。它们用相同输入验答案、计时，自动保存原始数据、汇总表和运行环境。
 
-接入了唐振雄的优化代码，补齐多线程工作区、线程数核对和六版本轮换计时，并对齐了逐行版的归一化顺序。实验脚本可运行这两条路线对应的提案尺寸和线程配置；分块版等实现就绪后再接。
+10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。用 `--streaming` 开启三路线测试，默认 Bq=16、Bk=256。旧的两路线结果保留，三路线完整复测待统一运行。
 
 10 月 22 日补了三轮完整复测、PyTorch CPU 对照，以及 roofline 用的算术和带宽参考测试，原始数据和比较图都已保存。结果通过正确性检查，但部分配置的耗时仍有明显波动；实际 DRAM 流量尚未测到，流量分析目前使用明确列出假设的模型。[查看最新结果](examples/validation_20261022/README.md)。
 
@@ -60,7 +60,8 @@ Chen's benchmark work now includes the shared scalar/SIMD/OpenMP tests, saved-re
 checks and plots, an allocating PyTorch CPU comparison, and a roofline reference
 experiment. Run instructions: [native results](docs/RESULT_ANALYSIS.md),
 [PyTorch](docs/PYTORCH_COMPARISON.md), [roofline](docs/ROOFLINE_REFERENCE.md).
-Blocked streaming will join the same tests when its implementation is ready.
+Blocked streaming now joins the native tests with `--streaming`; its PyTorch API
+comparison and final three-route interpretation remain to be added.
 
 ## How we work
 
@@ -93,9 +94,27 @@ and invalid-argument handling (use `build/attn_bench` on Linux/macOS).
 `python tests/test_contract_gate.py` builds a separate fault-injection binary to verify
 that finite errors, NaN, and a failed final check cannot produce performance CSVs.
 
+
 The full-matrix scalar route materializes the complete score matrix, normalizes all rows
 in place to form P, then computes P*V. Rowwise uses the same row arithmetic but completes
 each query row immediately. This phase-order correction changes the baseline; measurements
 from older binaries should be kept separate.
+
+## Blocked streaming: scalar, SIMD and OpenMP (Cui Ziwei)
+
+Route 3 is implemented with explicit query/key blocks and online softmax.
+Run `build/attn_streaming_tests` after `bash build.sh` (Windows: `.exe`).
+See [the interface and verification guide](docs/STREAMING_CUIZIWEI.md) and
+[the local scalar tile pilot](examples/streaming_cuiziwei_20261022/README.md).
+SIMD and static OpenMP are now implemented for route 3. Build with
+`python3 -B tools/build_streaming_optimized.py`, then run
+`build/streaming_optimized/test`. See [optimized API/tests](docs/STREAMING_OPTIMIZED.md)
+and [same-build measurements](examples/streaming_optimized_20261022/README.md).
+The shared native harness now includes all three streaming modes.
+See [the team review checklist](docs/STREAMING_TEAM_HANDOFF.md) for integration
+ownership, interface decisions and the nine-mode comparison matrix.
+
+
+
 
 The scalar build uses -O3 -fno-tree-vectorize to keep automatic vectorization out of the baseline. SIMD variants are measured separately.

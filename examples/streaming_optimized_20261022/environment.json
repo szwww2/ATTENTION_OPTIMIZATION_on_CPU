@@ -1,0 +1,352 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-22T15:27:50.318888+00:00",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "python": "3.13.12",
+  "thread_environment": {
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_PROC_BIND": "close",
+    "OMP_PLACES": "cores",
+    "OMP_WAIT_POLICY": "PASSIVE"
+  },
+  "scope": "route3 only; fixed Bq16/Bk256; same-build scalar baseline; one local pilot",
+  "revision": "6d71c61a770bca1ac42c07996517dbb35ad73d1d",
+  "working_tree": " M README.md\n M build.bat\n M build.sh\n M include/attn.h\n?? docs/STREAMING_CUIZIWEI.md\n?? docs/STREAMING_PLAN_CUIZIWEI.md\n?? examples/\n?? include/attn_simd.h\n?? src/blocked_streaming_avx2.cpp\n?? src/blocked_streaming_internal.h\n?? src/blocked_streaming_optimized.cpp\n?? src/blocked_streaming_scalar.cpp\n?? tests/test_streaming.cpp\n?? tests/test_streaming_optimized.cpp\n?? tests/test_streaming_records.py\n?? tools/bench_streaming.cpp\n?? tools/bench_streaming_optimized.cpp\n?? tools/build_streaming_optimized.py\n?? tools/run_streaming_experiment.py\n?? tools/run_streaming_optimized.py\n",
+  "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "cpu": {
+    "lscpu": [
+      {
+        "field": "Architecture:",
+        "data": "x86_64"
+      },
+      {
+        "field": "CPU op-mode(s):",
+        "data": "32-bit, 64-bit"
+      },
+      {
+        "field": "Address sizes:",
+        "data": "39 bits physical, 48 bits virtual"
+      },
+      {
+        "field": "Byte Order:",
+        "data": "Little Endian"
+      },
+      {
+        "field": "CPU(s):",
+        "data": "20"
+      },
+      {
+        "field": "On-line CPU(s) list:",
+        "data": "0-19"
+      },
+      {
+        "field": "Vendor ID:",
+        "data": "GenuineIntel"
+      },
+      {
+        "field": "Model name:",
+        "data": "12th Gen Intel(R) Core(TM) i7-12700H"
+      },
+      {
+        "field": "CPU family:",
+        "data": "6"
+      },
+      {
+        "field": "Model:",
+        "data": "154"
+      },
+      {
+        "field": "Thread(s) per core:",
+        "data": "2"
+      },
+      {
+        "field": "Core(s) per socket:",
+        "data": "10"
+      },
+      {
+        "field": "Socket(s):",
+        "data": "1"
+      },
+      {
+        "field": "Stepping:",
+        "data": "3"
+      },
+      {
+        "field": "BogoMIPS:",
+        "data": "5376.00"
+      },
+      {
+        "field": "Flags:",
+        "data": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves avx_vnni vnmi umip waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize flush_l1d arch_capabilities"
+      },
+      {
+        "field": "Virtualization:",
+        "data": "VT-x"
+      },
+      {
+        "field": "Hypervisor vendor:",
+        "data": "Microsoft"
+      },
+      {
+        "field": "Virtualization type:",
+        "data": "full"
+      },
+      {
+        "field": "L1d cache:",
+        "data": "480 KiB (10 instances)"
+      },
+      {
+        "field": "L1i cache:",
+        "data": "320 KiB (10 instances)"
+      },
+      {
+        "field": "L2 cache:",
+        "data": "12.5 MiB (10 instances)"
+      },
+      {
+        "field": "L3 cache:",
+        "data": "24 MiB (1 instance)"
+      },
+      {
+        "field": "NUMA node(s):",
+        "data": "1"
+      },
+      {
+        "field": "NUMA node0 CPU(s):",
+        "data": "0-19"
+      },
+      {
+        "field": "Vulnerability Gather data sampling:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Itlb multihit:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability L1tf:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Mds:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Meltdown:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Mmio stale data:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Reg file data sampling:",
+        "data": "Vulnerable: No microcode"
+      },
+      {
+        "field": "Vulnerability Retbleed:",
+        "data": "Mitigation; Enhanced IBRS"
+      },
+      {
+        "field": "Vulnerability Spec rstack overflow:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Spec store bypass:",
+        "data": "Mitigation; Speculative Store Bypass disabled via prctl"
+      },
+      {
+        "field": "Vulnerability Spectre v1:",
+        "data": "Mitigation; usercopy/swapgs barriers and __user pointer sanitization"
+      },
+      {
+        "field": "Vulnerability Spectre v2:",
+        "data": "Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S"
+      },
+      {
+        "field": "Vulnerability Srbds:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Tsx async abort:",
+        "data": "Not affected"
+      }
+    ]
+  },
+  "allowed_cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "source_sha256": {
+    "src/blocked_streaming_scalar.cpp": "0b2f23f1b427e8eb5e10f0b9b3dff607e0cf085572275d0d45e1c18e6307a695",
+    "src/blocked_streaming_optimized.cpp": "59ea87e19519a6e6187eb6889548ab54bb0311a33a373782d2ebf9199e888d74",
+    "src/blocked_streaming_avx2.cpp": "0ff00155c0f1b92289ca69720a71e7efe79c9d5dc16c09279f8a7bf266844bfa",
+    "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+    "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+    "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+    "include/attn.h": "132fb9ffc2e3763b87602e0c8e98847afbeedd37426140859263b978d67f69f9",
+    "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+    "src/blocked_streaming_internal.h": "4f943b07c257661293d369f6dbcfe5d5aa75dcaa47fc9c8cf2bde5d289cb23ca",
+    "tools/bench_streaming_optimized.cpp": "8896f3c094c27d619dbfb80221076971be9585a04c3a2d4a957dd63775fc7d1b",
+    "tools/build_streaming_optimized.py": "7e049f54fc939dd31e504ddf43e7b3549e96509a6103ba92a2995e694c0c0c74",
+    "tools/run_streaming_optimized.py": "b10cf109c666b297750483486abc7b43490eac4e389cd3b06973d037cdaf364e",
+    "tests/test_streaming_optimized.cpp": "ba3186ae7c24963b5c40dfbaf1c640a3b75e1fb158de2d975dcac4c04cd7c027"
+  },
+  "build_commands": [
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-c",
+      "src/blocked_streaming_scalar.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_scalar.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-c",
+      "src/blocked_streaming_optimized.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_optimized.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-mavx2",
+      "-c",
+      "src/blocked_streaming_avx2.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_avx2.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-c",
+      "src/oracle_fp64.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/oracle_fp64.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-c",
+      "src/input.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/input.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "-c",
+      "src/metrics.cpp",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/metrics.o"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "tests/test_streaming_optimized.cpp",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_scalar.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_optimized.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_avx2.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/oracle_fp64.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/input.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/metrics.o",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/test"
+    ],
+    [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp",
+      "tools/bench_streaming_optimized.cpp",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_scalar.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_optimized.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/blocked_streaming_avx2.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/oracle_fp64.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/input.o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/metrics.o",
+      "-o",
+      "/mnt/d/desktop/nus/CEG5206 Algorithms & Performance Optimization for Computing/opencode_work/team_project/ATTENTION_OPTIMIZATION_on_CPU/build/streaming_optimized/bench"
+    ]
+  ],
+  "binary_sha256": "65dab1fa4312f5b3fba101b9c031bde90f761def0b3bb96dc32766667e7f1aba",
+  "linked_libraries": "\tlinux-vdso.so.1 (0x00007ffe7adf0000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000075a677a00000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000075a677919000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x000075a677c44000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000075a6778f9000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000075a677600000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000075a677ca3000)\n",
+  "tests": "optimized streaming: 13181 checks, 0 failures, max_abs=2.59116849e-06, largest_actual_team=8\n",
+  "configurations": 24,
+  "samples": 480,
+  "finished_utc": "2026-10-22T15:29:03.398100+00:00"
+}

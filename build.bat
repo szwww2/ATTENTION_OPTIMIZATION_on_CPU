@@ -5,8 +5,8 @@ setlocal
 
 if not defined CXX set CXX=g++
 set STD=-std=c++17
-set SRC=src\oracle_fp64.cpp src\full_matrix_scalar.cpp src\rowwise_scalar.cpp src\input.cpp src\metrics.cpp
-set BASEFLAGS=%STD% -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude
+set SRC=src\oracle_fp64.cpp src\full_matrix_scalar.cpp src\rowwise_scalar.cpp src\blocked_streaming_scalar.cpp src\input.cpp src\metrics.cpp
+set BASEFLAGS=%STD% -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude
 
 if not exist build mkdir build
 
@@ -26,7 +26,11 @@ echo [4/4] blocks  : attn_blocks.exe  (route 2, block sizes and row order)
 "%CXX%" %BASEFLAGS% %SRC% tests\test_blocks.cpp -o build\attn_blocks.exe
 if errorlevel 1 exit /b 1
 
+echo streaming: attn_streaming_tests.exe
+"%CXX%" %BASEFLAGS% %SRC% tests\test_streaming.cpp -o build\attn_streaming_tests.exe
+if errorlevel 1 exit /b 1
+
 echo flags=%BASEFLAGS%> build\scalar_build.txt
 "%CXX%" --version >> build\scalar_build.txt
-echo built: build\attn_tests.exe  build\attn_bench.exe  build\attn_dump.exe  build\attn_blocks.exe
+echo built: build\attn_tests.exe  build\attn_bench.exe  build\attn_dump.exe  build\attn_blocks.exe  build\attn_streaming_tests.exe
 endlocal

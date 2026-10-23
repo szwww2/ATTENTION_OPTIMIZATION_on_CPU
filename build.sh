@@ -5,8 +5,8 @@ set -euo pipefail
 
 CXX=${CXX:-g++}
 STD="-std=c++17"
-SRC="src/oracle_fp64.cpp src/full_matrix_scalar.cpp src/rowwise_scalar.cpp src/input.cpp src/metrics.cpp"
-BASEFLAGS="$STD -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude"
+SRC="src/oracle_fp64.cpp src/full_matrix_scalar.cpp src/rowwise_scalar.cpp src/blocked_streaming_scalar.cpp src/input.cpp src/metrics.cpp"
+BASEFLAGS="$STD -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude"
 
 mkdir -p build
 
@@ -22,6 +22,9 @@ echo "[3/4] dump    : build/attn_dump    (cross-check helper)"
 echo "[4/4] blocks  : build/attn_blocks  (route 2, block sizes and row order)"
 "$CXX" $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
 
+echo "streaming: build/attn_streaming_tests (FP64, tiles, permutations and guards)"
+"$CXX" $BASEFLAGS $SRC tests/test_streaming.cpp -o build/attn_streaming_tests
+
 echo "flags=$BASEFLAGS" > build/scalar_build.txt
 "$CXX" --version >> build/scalar_build.txt
-echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks"
+echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks  build/attn_streaming_tests"

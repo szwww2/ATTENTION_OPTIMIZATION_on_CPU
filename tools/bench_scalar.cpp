@@ -27,6 +27,8 @@ struct Options {
     std::string mode = "scalar";
     int threads = 1;
     int observed_threads = 1;
+    bool streaming = false;
+    std::size_t key_block = 256;
 };
 
 std::uint64_t number(const std::string& text, std::uint64_t low, std::uint64_t high) {
@@ -38,6 +40,7 @@ std::uint64_t number(const std::string& text, std::uint64_t low, std::uint64_t h
 }
 
 void usage() {
+    std::cout << "Add --streaming --key-block 1..4096 to include the third route (integrated build).\n";
     std::cout << "Modes: --mode scalar|simd|serial|openmp|all; --threads 1..64 (openmp/all).\n";
     std::cout << "attn_bench [--L 1..4096] [--d 1..512] [--dv 1..512]\n"
               << "           [--query-block 1..4096] [--warmup 1..1000] [--reps 3..1000]\n"
@@ -51,8 +54,9 @@ Options parse(int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg == "--csv") { o.csv = true; continue; }
+        if (arg == "--streaming") { o.streaming = true; continue; }
         if (arg != "--L" && arg != "--d" && arg != "--dv" && arg != "--query-block" &&
-            arg != "--warmup" && arg != "--reps" && arg != "--seed" && arg != "--out" && arg != "--mode" && arg != "--threads")
+            arg != "--warmup" && arg != "--reps" && arg != "--seed" && arg != "--out" && arg != "--mode" && arg != "--threads" && arg != "--key-block")
             throw std::runtime_error("Unknown option: " + arg);
         if (++i == argc) throw std::runtime_error("Missing value for " + arg);
         const std::string value = argv[i];
@@ -66,12 +70,14 @@ Options parse(int argc, char** argv) {
         else if (arg == "--d") o.d = static_cast<std::size_t>(number(value, 1, 512));
         else if (arg == "--dv") o.dv = static_cast<std::size_t>(number(value, 1, 512));
         else if (arg == "--query-block") o.query_block = static_cast<std::size_t>(number(value, 1, 4096));
+        else if (arg == "--key-block") o.key_block = static_cast<std::size_t>(number(value, 1, 4096));
         else if (arg == "--warmup") o.warmup = static_cast<int>(number(value, 1, 1000));
         else if (arg == "--reps") o.reps = static_cast<int>(number(value, 3, 1000));
         else if (arg == "--seed") o.seed = number(value, 0, std::numeric_limits<std::uint64_t>::max());
         else { if (value.empty()) throw std::runtime_error("Empty output prefix"); o.out = value; }
     }
 #ifndef ATTN_WITH_SIMD
+    if (o.streaming) throw std::runtime_error("Build the integrated target for streaming");
     if (o.mode != "scalar") throw std::runtime_error("Build the integrated target for SIMD/OpenMP");
 #endif
     if (o.threads != 1 && o.mode != "all" && o.mode != "openmp")
@@ -82,6 +88,8 @@ Options parse(int argc, char** argv) {
 struct Route {
     const char* name;
     bool rowwise;
+    bool streaming = false;
+    std::size_t key_block = 0;
     std::string mode;
     int threads, actual_threads;
     std::vector<float> workspace, output;
@@ -91,6 +99,18 @@ struct Route {
 
 void call(Route& r, const attn::Shape& s, const attn::Tensors& t, std::size_t bq) {
 #ifdef ATTN_WITH_SIMD
+    if (r.streaming) {
+        if (r.mode == "openmp")
+            attn::blocked_streaming_simd_omp_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq,
+                r.key_block, r.threads, r.workspace.data(), r.output.data(), &r.actual_threads);
+        else if (r.mode == "simd")
+            attn::blocked_streaming_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq,
+                r.key_block, r.workspace.data(), r.output.data());
+        else
+            attn::blocked_streaming_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq,
+                r.key_block, r.workspace.data(), r.output.data());
+        return;
+    }
     if (r.mode == "simd") {
         if (r.rowwise) attn::rowwise_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq, r.workspace.data(), r.output.data());
         else attn::full_matrix_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(), r.workspace.data(), r.output.data());
@@ -137,14 +157,18 @@ ShapeResult measure(const Options& o, std::size_t L) {
     attn::Tensors t;
     t.resize(s);
     t.fill_qkv(o.seed);  // Generated once; both routes read these exact buffers.
+    const auto original_q = t.q, original_k = t.k, original_v = t.v;
     attn::oracle_fp64(s, t.q.data(), t.k.data(), t.v.data(), t.o_ref.data());
     for (const std::string mode : {"scalar", "simd", "openmp"}) {
         if (o.mode == "serial") { if (mode == "openmp") continue; }
         else if (o.mode != "all" && o.mode != mode) continue;
         const int workers = mode == "openmp" ? o.threads : 1;
-        for (bool rowwise : {false, true}) {
+        for (int kind = 0; kind < (o.streaming ? 3 : 2); ++kind) {
+            const bool rowwise = kind == 1;
             Route route{};
-            route.name = rowwise ? "rowwise" : "full_matrix";
+            route.name = kind == 2 ? "blocked_streaming" : rowwise ? "rowwise" : "full_matrix";
+            route.streaming = kind == 2;
+            route.key_block = route.streaming ? std::min(o.key_block, L) : 0;
             route.rowwise = rowwise;
             route.mode = mode;
             route.threads = workers;
@@ -156,10 +180,16 @@ ShapeResult measure(const Options& o, std::size_t L) {
         auto elems = r.rowwise ? attn::rowwise_workspace_elems(s, result.bq)
                               : attn::full_matrix_workspace_elems(s);
         if (r.rowwise && r.mode == "openmp") elems *= static_cast<std::size_t>(r.threads);
+#ifdef ATTN_WITH_SIMD
+        if (r.streaming) elems = r.mode == "openmp"
+            ? attn::blocked_streaming_omp_workspace_elems(s, result.bq, r.key_block, r.threads)
+            : attn::blocked_streaming_workspace_elems(s, result.bq, r.key_block);
+#endif
         r.workspace.assign(elems, 0.0f);
         r.output.assign(attn::v_elems(s), std::numeric_limits<float>::quiet_NaN());
         r.times.reserve(static_cast<std::size_t>(o.reps));
         call(r, s, t, result.bq);
+        if (r.actual_threads != r.threads) throw std::runtime_error("Actual streaming team differs from requested threads");
         r.before = validate(r, t, "before timing");  // Both routes pass before any samples.
     }
     const auto count = result.routes.size();
@@ -173,12 +203,15 @@ ShapeResult measure(const Options& o, std::size_t L) {
             const auto start = std::chrono::steady_clock::now();
             call(r, s, t, result.bq);
             const auto end = std::chrono::steady_clock::now();
+            if (r.actual_threads != r.threads) throw std::runtime_error("Actual streaming team changed during timing");
             const double ms = std::chrono::duration<double, std::milli>(end - start).count();
             if (!(ms > 0.0) || !std::isfinite(ms)) throw std::runtime_error("Invalid timer sample");
             r.times.push_back(ms);
         }
     }
     for (auto& r : result.routes) r.after = validate(r, t, "after timing");
+    if (t.q != original_q || t.k != original_k || t.v != original_v)
+        throw std::runtime_error("An implementation modified Q/K/V inputs");
     return result;
 }
 
@@ -188,8 +221,10 @@ void write_results(const Options& o, const std::vector<ShapeResult>& results) {
     raw << std::setprecision(17);
     summary << std::setprecision(17);
     const std::string header = "route,L,d,dv,seed,query_block,warmup,reps,median_ms,min_ms,q1_ms,q3_ms,iqr_ms,"
-                               "gflops,workspace_bytes,pre_max_abs,pre_max_rel,post_max_abs,post_max_rel,contract_pass,mode,threads,actual_threads\n";
-    raw << "route,L,d,dv,seed,query_block,sample,order,ms,mode,threads,actual_threads\n";
+                               "gflops,workspace_bytes,pre_max_abs,pre_max_rel,post_max_abs,post_max_rel,contract_pass,mode,threads,actual_threads"
+                               + std::string(o.streaming ? ",key_block,requested_query_block,requested_key_block\n" : "\n");
+    raw << "route,L,d,dv,seed,query_block,sample,order,ms,mode,threads,actual_threads"
+        << (o.streaming ? ",key_block,requested_query_block,requested_key_block\n" : "\n");
     summary << header;
     if (o.csv) std::cout << std::setprecision(17) << header;
     else std::cout << "route L median_ms IQR_ms workspace_bytes contract\n";
@@ -197,10 +232,16 @@ void write_results(const Options& o, const std::vector<ShapeResult>& results) {
         const auto& s = result.shape;
         for (std::size_t index = 0; index < result.routes.size(); ++index) {
             const auto& r = result.routes[index];
-            const auto block = (r.rowwise || r.mode == "openmp") ? result.bq : 0;
-            for (std::size_t sample = 0; sample < r.times.size(); ++sample)
+            const auto block = (r.streaming || r.rowwise || r.mode == "openmp") ? result.bq : 0;
+            const auto extra = [&](std::ostream& out) {
+                if (o.streaming) out << ',' << r.key_block << ',' << o.query_block << ',' << o.key_block;
+                out << '\n';
+            };
+            for (std::size_t sample = 0; sample < r.times.size(); ++sample) {
                 raw << r.name << ',' << s.L << ',' << s.d << ',' << s.dv << ',' << o.seed << ','
-                    << block << ',' << sample << ',' << ((index + result.routes.size() - sample % result.routes.size()) % result.routes.size()) << ',' << r.times[sample] << ',' << r.mode << ',' << r.threads << ',' << r.actual_threads << '\n';
+                    << block << ',' << sample << ',' << ((index + result.routes.size() - sample % result.routes.size()) % result.routes.size()) << ',' << r.times[sample] << ',' << r.mode << ',' << r.threads << ',' << r.actual_threads;
+                extra(raw);
+            }
             auto sorted = r.times;
             std::sort(sorted.begin(), sorted.end());
             const double median = quantile(sorted, 0.5), q1 = quantile(sorted, 0.25), q3 = quantile(sorted, 0.75);
@@ -211,7 +252,8 @@ void write_results(const Options& o, const std::vector<ShapeResult>& results) {
                 out << r.name << ',' << s.L << ',' << s.d << ',' << s.dv << ',' << o.seed << ',' << block << ','
                     << o.warmup << ',' << o.reps << ',' << median << ',' << sorted.front() << ',' << q1 << ',' << q3
                     << ',' << q3-q1 << ',' << flops/(median*1e6) << ',' << bytes << ',' << r.before.max_abs << ','
-                    << r.before.max_rel << ',' << r.after.max_abs << ',' << r.after.max_rel << ",1," << r.mode << ',' << r.threads << ',' << r.actual_threads << "\n";
+                    << r.before.max_rel << ',' << r.after.max_abs << ',' << r.after.max_rel << ",1," << r.mode << ',' << r.threads << ',' << r.actual_threads;
+                extra(out);
             };
             row(summary);
             if (o.csv) row(std::cout);

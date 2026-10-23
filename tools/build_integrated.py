@@ -51,9 +51,13 @@ def main():
         ).splitlines()[0]
         core = [compile_source("src/" + name + ".cpp") for name in (
             "oracle_fp64", "full_matrix_scalar", "rowwise_scalar", "input", "metrics",
+            "blocked_streaming_scalar",
         )]
         simd = compile_source("src/simd_routes.cpp", SIMD_FLAGS)
         omp = compile_source("src/omp_routes.cpp", OMP_FLAGS)
+        streaming_simd = compile_source("src/blocked_streaming_avx2.cpp", SIMD_FLAGS)
+        streaming_dispatch = compile_source("src/blocked_streaming_optimized.cpp", OMP_FLAGS)
+        streaming_objects = [streaming_simd, streaming_dispatch]
 
         scalar_test = compile_source("tests/test_contract.cpp")
         link_program("attn_tests", [*core, scalar_test])
@@ -67,10 +71,16 @@ def main():
         omp_test = compile_source("tests/test_omp_routes.cpp", OMP_FLAGS)
         link_program("attn_omp_tests", [*core, simd, omp, omp_test], openmp=True)
 
+        streaming_test = compile_source("tests/test_streaming.cpp")
+        link_program("attn_streaming_tests", [*core, streaming_test])
+        streaming_opt_test = compile_source("tests/test_streaming_optimized.cpp", OMP_FLAGS)
+        link_program("attn_streaming_optimized_tests",
+                     [*core, *streaming_objects, streaming_opt_test], openmp=True)
+
         benchmark = compile_source(
             "tools/bench_scalar.cpp", ["-DATTN_WITH_SIMD", *OMP_FLAGS],
         )
-        link_program("attn_bench_all", [*core, simd, omp, benchmark], openmp=True)
+        link_program("attn_bench_all", [*core, simd, omp, *streaming_objects, benchmark], openmp=True)
         record.write_text(
             "status=passed\n"
             + "compiler=" + version + "\n"
@@ -79,10 +89,11 @@ def main():
             + "openmp_extra_flags=" + " ".join(OMP_FLAGS) + "\n"
             + "benchmark_defines=ATTN_WITH_SIMD\n"
             + "simd_test_defines=ATTN_TEST_SIMD\n"
-            + "scalar_translation_units=baseline flags; no AVX2\n",
+            + "scalar_translation_units=baseline flags; no AVX2\n"
+            + "avx2_translation_units=src/simd_routes.cpp src/blocked_streaming_avx2.cpp\n",
             encoding="utf-8",
         )
-        print("Built integrated benchmark and five test executables.")
+        print("Built integrated benchmark and seven test executables.")
         return 0
     except (OSError, subprocess.CalledProcessError) as error:
         record.write_text("status=failed\n", encoding="utf-8")
