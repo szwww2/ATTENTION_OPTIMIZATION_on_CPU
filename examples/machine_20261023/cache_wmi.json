@@ -1,0 +1,7 @@
+{
+  "Name": "Intel(R) Core(TM) Ultra 7 356H",
+  "NumberOfCores": 16,
+  "NumberOfLogicalProcessors": 16,
+  "L2CacheSize": 24576,
+  "L3CacheSize": 18432
+}

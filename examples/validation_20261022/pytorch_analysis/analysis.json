@@ -1,0 +1,201 @@
+{
+  "status": "passed",
+  "configurations": 36,
+  "raw_samples": 720,
+  "environment": {
+    "bridge_build": {
+      "status": "passed",
+      "library": "gp8_attention.dll",
+      "compiler": "g++.exe (GCC) 16.2.0",
+      "compile_commands": [
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-c",
+          "src/input.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-c",
+          "src/oracle_fp64.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-c",
+          "src/full_matrix_scalar.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-c",
+          "src/rowwise_scalar.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-mavx2",
+          "-c",
+          "src/simd_routes.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-fopenmp",
+          "-c",
+          "src/omp_routes.cpp"
+        ],
+        [
+          "g++",
+          "-std=c++17",
+          "-O3",
+          "-fno-tree-vectorize",
+          "-ffp-contract=off",
+          "-Wall",
+          "-Wextra",
+          "-Iinclude",
+          "-fPIC",
+          "-fopenmp",
+          "-c",
+          "tools/attention_c_api.cpp"
+        ]
+      ],
+      "link_flags": [
+        "-shared",
+        "-fopenmp"
+      ],
+      "source_sha256": {
+        "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+        "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+        "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+        "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+        "src/simd_routes.cpp": "0fb6720a93e569dcbc4d113ee48e33644a21eb132bbed1344f42dffcdd650803",
+        "src/omp_routes.cpp": "f0486adf5e88c7765ed51fc15c3b8a1f5e5d8f2055b5476cf5bf538dd4a19a60",
+        "tools/attention_c_api.cpp": "cdf2bcfa9c2a91e21ae560d6a2e571b83fa4992d4da0ffa2c69aa408da15f0dd",
+        "include/attn.h": "e26c39c5fe70636076c4219af6c8f12bdef8942d55bb062ed9a44c3030b6d1e5",
+        "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+        "src/simd_row.h": "f59a554a5df99ae57aefe03e3ec61b886175292db4148d17f2bd57d0428fbb50",
+        "tools/build_python_bridge.py": "c0c09a1408cf6d44474566d1375014fb1689416e7dbee420117bc8a8cce40902",
+        "tools/build_integrated.py": "fa814b3a758d7fa205305e4678da90c653da778654f85a3665bc7fa2f3fcb5f2"
+      },
+      "binary_sha256": "9ae36e7475d46aa0974621f16b63163f89d1bf80fec6f12c52d69bfe2e0da254"
+    },
+    "source_revision": "928e15119b185aec4f8efa2c8d8ef17d88cb7c8c",
+    "source_dirty": false,
+    "runner_sha256": {
+      "tools/compare_pytorch.py": "1eaf19bc312e5f2a45aebd0eb23b24cb47a77bc6839420d16b9ad82f12bd5da8",
+      "tools/attention_bridge.py": "04ee1f78ee4441977e6a867da5b96b55e7aebb56c89e8f2eb8454339dd6ce63f"
+    },
+    "torch_version": "2.13.0+cpu",
+    "torch_build": "PyTorch built with:\n  - C++ Version: 202002\n  - MSVC 194234444\n  - Intel(R) oneAPI Math Kernel Library Version 2026.1-Product Build 20260612 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.12.0 (Git Hash 80afa71049cd69a3df32adcccb623b12cd7baa22)\n  - OpenMP 2019\n  - LAPACK is enabled (usually provided by MKL)\n  - CPU capability usage: AVX2\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=cf30153c4c131c8164ee7798e5022d810682e2cb, CUDA_FLAGS= -DLIBCUDACXX_ENABLE_SIMPLIFIED_COMPLEX_OPERATIONS -Xcompiler /Zc:__cplusplus -Xcompiler /Zc:preprocessor -Xcompiler /w -w -Xcompiler /FS -Xfatbin -compress-all  -Xcompiler=/wd4819,/wd4503,/wd4190,/wd4244,/wd4251,/wd4275,/wd4522 -Wno-deprecated-gpu-targets --expt-extended-lambda -DCUB_WRAPPED_NAMESPACE=at_cuda_detail -DDISABLE_CUSPARSE_DEPRECATED -DCUDA_HAS_FP16=1 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__, CXX_COMPILER=C:/actions-runner/_work/pytorch/pytorch/.ci/pytorch/windows/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /bigobj /FS /utf-8 -DNDEBUG -DUSE_KINETO -DSYMBOLICATE_MOBILE_DEBUG_HANDLE /wd4624 /wd4068 /wd4067 /wd4267 /wd4661 /wd4717 /wd4244 /wd4804 /wd4273, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.13.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n",
+    "numpy": "2.5.4",
+    "python": "3.12.14",
+    "cpu": {
+      "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+      "logical_processors": 16,
+      "windows_cim": {
+        "Name": "Intel(R) Core(TM) Ultra 7 356H",
+        "NumberOfCores": 16,
+        "NumberOfLogicalProcessors": 16
+      }
+    },
+    "os": "Windows-11-10.0.26200-SP0",
+    "timing_scope": "allocating CPU API: Python dispatch, output allocation, workspace allocation/reset/release and compute; output release outside timer",
+    "affinity": "not pinned",
+    "power_mode": "not changed by this runner",
+    "correctness_scope": "precheck and last timed output for each variant; not every sample",
+    "unavailable_routes": [
+      "blocked_streaming"
+    ],
+    "pool_policy_except_threads": {
+      "OMP_THREAD_LIMIT": null,
+      "OMP_WAIT_POLICY": "PASSIVE",
+      "KMP_BLOCKTIME": "0",
+      "OMP_PROC_BIND": null,
+      "OMP_PLACES": null
+    }
+  },
+  "input_sha256": {
+    "manifest.json": "44dfc869293fb0889f9cf1def274454e45aacf0b167b9fd495765f8399fb32ad",
+    "L128_d64_T1/environment.json": "f2238e3a08ca9edcd0d91f022fd3b028e32fc9284c8bb12c3098f70ce5cc6321",
+    "L128_d64_T1/raw.csv": "47ec888c6287d6daec827ab1db268c77456586d7f8cb9a21595e5bcb86532fa2",
+    "L128_d64_T1/summary.csv": "8c11f1999aadb9b0042f6bcd9ad49df02675c35af8b3928549103fd385330803",
+    "L512_d64_T1/environment.json": "dcf66c3714ae606b315373d14f56eaab6949a47455d57d05f54889a1f2647337",
+    "L512_d64_T1/raw.csv": "bf72f041f52ebcd3e0aa86d360b9fb5048cc9011090b8cc3520c9a82bb1aaacf",
+    "L512_d64_T1/summary.csv": "edc7e185e020fcd3c8da6b80b1fa5d3af3f77ad4caa574efc7cf3029931b4ded",
+    "L2048_d64_T1/environment.json": "9dc5cf04627e399f11194f003b2defe70b8eca77fe5a40cfa539389629b28487",
+    "L2048_d64_T1/raw.csv": "d2937206b11157cabc8d4f9d9f3b0dcc84a19f08a664fd10c3bb24d7cfbd08e3",
+    "L2048_d64_T1/summary.csv": "08868e22e742c4596fb25776342fedefc2b11448a5ca162b6701350950048275",
+    "L4096_d64_T1/environment.json": "83e462356d8096bcf87e6521b49a0a94fe2c7c18d34e25da4fa8c3df95009d44",
+    "L4096_d64_T1/raw.csv": "1964c014bf2c6d55e48fea41cfadce5522772b5f267612382351aa8422be827f",
+    "L4096_d64_T1/summary.csv": "8d7b69b2042fbb4121f44c5eb5efc8e291797f3ed121cf279b75110f3fe0d5f6",
+    "L512_d32_T1/environment.json": "4ae82d70398169d86442ea4e50c23c243f68d07776b0441de525be7c3b4e22b7",
+    "L512_d32_T1/raw.csv": "ef96c9574a51786f72aee11ff83e68c25b67362a5b5b3ab5246d049997532797",
+    "L512_d32_T1/summary.csv": "9fd46bc6f1ecb381776091a67448d1a33e382875bc705778843e881e9b1d4d9a",
+    "L2048_d32_T1/environment.json": "abe736ceb21b3ef7691dee252eb76229e062beadce138d17407e2118182b3467",
+    "L2048_d32_T1/raw.csv": "ea1832fd075cfa401f6d658251dbcc61edd889073726da526c73f0551609cd4b",
+    "L2048_d32_T1/summary.csv": "5a4ca896586c6f963bfe81fd769caa227d0cb2a0f941d1e5a733872a7b35188c",
+    "L128_d64_T2/environment.json": "ed215026b74538f003d9a74ae613d2a236be91a07314a090cb29924ad6fdd17a",
+    "L128_d64_T2/raw.csv": "a50d52ebb097a9737f6eadeb29bb8994d6b392cadbea7929754a38275ab76429",
+    "L128_d64_T2/summary.csv": "f51646b48e82b0a92c30ea3d6d997849fe17ae842c417c30d65bff1fee60f3a5",
+    "L128_d64_T4/environment.json": "fa630d12275d698b2d6a852ddd63af2219269c24c07736459fa22b7a65f52ffc",
+    "L128_d64_T4/raw.csv": "019eff1f7693cbea8c7ab4c7f949973776a7ddb49ba561ace34fc7e69d37590e",
+    "L128_d64_T4/summary.csv": "045384ab0d906f7d51e4cee8c2fbfcb1a0e2c77041c7b2d03b543e54c3c1bfa4",
+    "L128_d64_T8/environment.json": "f131ac69bfe8e48c7bdb1781b71dcd20d7925d1774acfc245bd92519ecb69625",
+    "L128_d64_T8/raw.csv": "b0b6dcc675ce4244707d8b13b9c45f1c5b696b0015c68961f9e865d0428bd0fc",
+    "L128_d64_T8/summary.csv": "5be0eccbf0fe9e04bc332f19adc8f9c9d28c475b3ce0b68c70af84714b26a952",
+    "L4096_d64_T2/environment.json": "d3b7989f1f7ab6b0c9193e57a0561b87669415fe17fb2ed558dce0f68b59cc2a",
+    "L4096_d64_T2/raw.csv": "c5c74bf0ca0e026bcfa9e84a32a95280a0c764d12447d92d9d621ad563c79228",
+    "L4096_d64_T2/summary.csv": "4ffbba34b0b11f5cfe31d8621bca00aa8e3f846bfdde6d62355727291ccf7ef5",
+    "L4096_d64_T4/environment.json": "696b0458a03d32f7a2644713abbb7f8602b1b1357eca44bf42f3d5d1cf8fa3d0",
+    "L4096_d64_T4/raw.csv": "4378b983ccf331cc97fee19f9eaf9cf1d6c0824023b645afc4b3626070ffcd1d",
+    "L4096_d64_T4/summary.csv": "df781078a9af2e599ef7e7d578685e6975683efedee632b750797db5bc843186",
+    "L4096_d64_T8/environment.json": "2c55e5ba5680c8b3ced563785e09818445bda6290554e518b0024b31cc32f8cb",
+    "L4096_d64_T8/raw.csv": "06cc8cc5a7e1adc717b548f5c49549041f71551c92be6a2a502f92e6a579a41c",
+    "L4096_d64_T8/summary.csv": "6a69350506d1f3f0ed23b9c664e88ce2f7395a58bb3f94ceddf5fc0b35c588b2"
+  },
+  "analysis_sha256": "fe46d48c5f0abb85c571b237b8fd06bf3e34b7e7122b86157299e44ffbcc9512"
+}

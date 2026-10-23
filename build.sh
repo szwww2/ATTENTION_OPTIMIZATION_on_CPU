@@ -6,23 +6,25 @@ set -euo pipefail
 CXX=${CXX:-g++}
 STD="-std=c++17"
 SRC="src/oracle_fp64.cpp src/full_matrix_scalar.cpp src/rowwise_scalar.cpp src/blocked_streaming_scalar.cpp src/input.cpp src/metrics.cpp"
-BASEFLAGS="$STD -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude"
+BASEFLAGS="$STD -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude"
 
 mkdir -p build
 
-echo "[1/4] tests   : build/attn_tests   (route 1, contract suite)"
-$CXX $BASEFLAGS $SRC tests/test_contract.cpp -o build/attn_tests
+echo "[1/4] tests   : build/attn_tests   (both scalar routes, contract suite)"
+"$CXX" $BASEFLAGS $SRC tests/test_contract.cpp -o build/attn_tests
 
 echo "[2/4] harness : build/attn_bench   (scalar, -fno-tree-vectorize)"
-$CXX $BASEFLAGS $SRC tools/bench_scalar.cpp -o build/attn_bench
+"$CXX" $BASEFLAGS $SRC tools/bench_scalar.cpp -o build/attn_bench
 
 echo "[3/4] dump    : build/attn_dump    (cross-check helper)"
-$CXX $BASEFLAGS $SRC tools/dump_case.cpp -o build/attn_dump
+"$CXX" $BASEFLAGS $SRC tools/dump_case.cpp -o build/attn_dump
 
 echo "[4/4] blocks  : build/attn_blocks  (route 2, block sizes and row order)"
-$CXX $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
+"$CXX" $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
 
 echo "streaming: build/attn_streaming_tests (FP64, tiles, permutations and guards)"
-$CXX $BASEFLAGS -ffp-contract=off $SRC tests/test_streaming.cpp -o build/attn_streaming_tests
+"$CXX" $BASEFLAGS $SRC tests/test_streaming.cpp -o build/attn_streaming_tests
 
+echo "flags=$BASEFLAGS" > build/scalar_build.txt
+"$CXX" --version >> build/scalar_build.txt
 echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks  build/attn_streaming_tests"

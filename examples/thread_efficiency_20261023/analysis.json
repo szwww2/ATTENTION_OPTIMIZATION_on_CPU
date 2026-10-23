@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "definition": "E(T) = [OpenMP time at T=1 / OpenMP time at T] / T, within each batch",
+  "interpretation": "Median/min/max across three batch efficiencies; not CPU utilization",
+  "limitation": "T=8 uses a mixed CPU class set on this machine; not equal-core scaling",
+  "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+  "protocol_sha256": "9d6529c4e1efd03dc11ef2925b50088538a25074323c59a1a39652efa0a9967c",
+  "frozen_settings_sha256": "43be7bfe7fc12445020dba45a756165ea6be062de5070dea76d6253790d48883",
+  "study_status_sha256": "385b05172ec460ffabb643c3545e659f51f283914eee8382cad24e852e5d64b9",
+  "raw_sample_fingerprints": {
+    "run1": "0769da81f6cadeefbd9bba32e497b119e095470ce6fd563576f3f622851c67b2",
+    "run2": "6237840a3203221407497c4b58037fb5046da2e7d33aaf7faa0aa377bbf5e4af",
+    "run3": "03ed39725f178fd314edfafb19bebc4b828810b961af2188d33977150d505ea6"
+  },
+  "analysis_sha256": "3d75490f01663e19cfa2dbfbf762909e47ca58a6ff30b5aa2b0ca472a6deee17",
+  "batch_rows": 72,
+  "summary_rows": 24
+}

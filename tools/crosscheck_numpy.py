@@ -82,7 +82,14 @@ def main():
     if not np32_ok:
         problems.append("numpy fp32 outside contract")
 
+    # Check the actual C++ output too; reporting its error alone is not a gate.
     diff_cpp = np.abs(o32.astype(np.float64) - ref_np)
+    cpp_margin = diff_cpp - (1e-4 + 1e-3 * np.abs(ref_np))
+    cpp_ok = bool(np.all(np.isfinite(o32)) and np.all(np.isfinite(ref_np))
+                  and np.all(cpp_margin <= 0))
+    print(f"[4] C++ FP32 vs NumPy FP64         : {'OK' if cpp_ok else 'FAIL'}")
+    if not cpp_ok:
+        problems.append("cpp fp32 outside contract")
     print(f"    (info) C++ FP32 max_abs = {diff_cpp.max():.3e}, "
           f"NumPy FP32 max_abs = {diff.max():.3e}, "
           f"|C++ - NumPy| max = {np.max(np.abs(o32.astype(np.float64) - o_np32.astype(np.float64))):.3e}")
