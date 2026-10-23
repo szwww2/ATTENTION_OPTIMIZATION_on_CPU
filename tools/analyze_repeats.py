@@ -5,7 +5,7 @@ import hashlib
 from pathlib import Path
 import statistics
 
-from analyze_results import load_grid, key
+from analyze_results import BLOCK_FIELDS, load_grid, key
 from compare_pytorch import save_csv, write_json
 
 
@@ -16,6 +16,8 @@ def main():
     args = parser.parse_args()
     if len(args.input) < 2 or args.out.exists():
         parser.error("Need at least two grids and a new output directory")
+    if len({p.resolve() for p in args.input}) != len(args.input):
+        parser.error("Each input must be a different run directory")
     grids = [load_grid(p) for p in args.input]
     first = grids[0]
     if any(g[1] != first[1] for g in grids):
@@ -27,6 +29,7 @@ def main():
     for config, row in groups[0].items():
         medians = [g[config]["median_ms"] for g in groups]
         result = {k: row[k] for k in ("route", "mode", "L", "d", "dv", "threads", "query_block")}
+        result.update({k: row[k] for k in BLOCK_FIELDS if k in row})
         result.update({f"run{i+1}_median_ms": v for i, v in enumerate(medians)})
         result.update({f"run{i+1}_iqr_ms": g[config]["iqr_ms"] for i, g in enumerate(groups)})
         result.update(
@@ -53,8 +56,11 @@ def main():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-    for ri, route in enumerate(("full_matrix", "rowwise")):
+    routes = sorted({r["route"] for r in first[0]})
+    record["plotted_routes"] = routes
+    fig, axes = plt.subplots(len(routes), 2, figsize=(12, 4 * len(routes)),
+                             squeeze=False, layout="constrained")
+    for ri, route in enumerate(routes):
         for ci, length in enumerate((128, 4096)):
             ax = axes[ri, ci]
             for run, grid in enumerate(grids):

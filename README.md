@@ -9,13 +9,13 @@ Deadline 13 Nov 2026, 23:59.
 
 统一测试工具已接入全矩阵、逐行、分块三条路线的普通版、SIMD 版和 OpenMP 版，共九种实现。它们用相同输入验答案、计时，自动保存原始数据、汇总表和运行环境。
 
-10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。用 `--streaming` 开启三路线测试，默认 Bq=16、Bk=256。旧的两路线结果保留，三路线完整复测待统一运行。
+10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。七套数值测试通过，完成一轮 60 配置、1,200 次计时的[三路线接入试跑](examples/three_routes_pilot_20261023/README.md)。这轮耗时有明显波动，前段与其他编译测试有重叠，先用来检查流程；正式比较前还要检查运行条件、确认块大小并复测。
 
 10 月 22 日补了三轮完整复测、PyTorch CPU 对照，以及 roofline 用的算术和带宽参考测试，原始数据和比较图都已保存。结果通过正确性检查，但部分配置的耗时仍有明显波动；实际 DRAM 流量尚未测到，流量分析目前使用明确列出假设的模型。[查看最新结果](examples/validation_20261022/README.md)。
 
 分析脚本会先核对原始数据，再生成汇总表和比较图。[首轮历史数据](examples/integrated_20261021/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
 
-[六版本的运行方法](docs/INTEGRATED_BENCHMARK.md) · [结果字段说明](docs/SCALAR_BENCHMARK.md) · [第一阶段示例](examples/scalar_20261020/README.md)
+[九版本的运行方法](docs/INTEGRATED_BENCHMARK.md) · [结果字段说明](docs/SCALAR_BENCHMARK.md) · [第一阶段示例](examples/scalar_20261020/README.md)
 
 ## Objectives
 

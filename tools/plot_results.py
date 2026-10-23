@@ -122,9 +122,11 @@ def make_plots(out, rows):
             fig,
             out,
             "thread_latency",
-            "SIMD + OpenMP: time versus thread count",
-            "Median and Q1–Q3; thread counts were checked by a preflight probe, not inside timed calls.\n"
-            "Each thread setting is a separate run. See analysis.json for recorded affinity and power settings.",
+            "OpenMP scaling",
+            ("Median and Q1–Q3. Full/row: preflight team probe. Streaming: compute-team check per sample.\n"
+             if any(r["route"] == "blocked_streaming" for r in parallel) else
+             "Median and Q1–Q3; team sizes checked by a preflight probe, not inside timed calls.\n")
+            + "Each thread setting is a separate run. See analysis.json for recorded affinity and power settings.",
         )
 
     # Show actual scratch reservations, independent of timing and input/output storage.

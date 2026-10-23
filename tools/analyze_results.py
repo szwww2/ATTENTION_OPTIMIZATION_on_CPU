@@ -389,7 +389,9 @@ def write_tables(out, rows, environment, skipped, hashes, plot_info=None):
         lines.append(
             f"- {row['job']}, {row['route']} / {row['mode']}: {row['iqr_over_median']:.1%}."
         )
-    lines += ["", "## Not measured", ""]
+    lines += ["", "## Unavailable configurations", ""]
+    if not skipped:
+        lines.append("None of the configurations in this grid was omitted.")
     for reason in sorted(
         {f"{j.get('route', j.get('id'))}: {j['reason']}" for j in skipped}
     ):

@@ -69,6 +69,15 @@ Defaults are 10 warm-ups, 20 samples and a 512 MiB planning budget. `--warmup`, 
 
 SIMD/OpenMP kernels and their tests originate from Tang Zhenxiong's branch at `f9f088c`. The shared benchmark and environment runner build on Chen Caoyu's scalar harness.
 
+The integration branch now includes both Cui's `e12b93f` and Tang's `f9f088c`
+in its Git history. Tang's merge retained the integrated versions of README,
+build.bat, build.sh, include/attn.h, src/simd_routes.cpp and
+tests/test_simd_kernels.cpp. Those versions contain the common build/benchmark
+setup, the phase/normalization corrections below and the non-finite test fix.
+Tang's additional tools, documents and original measurements are preserved.
+His MSVC results and Cui's earlier results remain separate historical experiments;
+they are not pooled into the new nine-variant measurements.
+
 - Rowwise SIMD now normalizes each probability before PV, matching the scalar version. Tang's original version divided the accumulated output instead.
 - SIMD PV still uses a different loop order from scalar PV. Results compare these implementations; they do not isolate vector instructions from locality and loop-order effects.
 - The primitive test now rejects non-finite value-accumulation output. Both existing scalar suites remain in place.

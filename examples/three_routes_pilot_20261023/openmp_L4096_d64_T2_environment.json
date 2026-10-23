@@ -1,0 +1,105 @@
+{
+  "started_utc": "2026-10-23T04:05:15.786396+00:00",
+  "source_revision": "8df4cdcb42d3f1826add971c8dc74b1d0b9b5ce4",
+  "source_dirty": false,
+  "source_sha256": {
+    "src/blocked_streaming_avx2.cpp": "0ff00155c0f1b92289ca69720a71e7efe79c9d5dc16c09279f8a7bf266844bfa",
+    "src/blocked_streaming_optimized.cpp": "59ea87e19519a6e6187eb6889548ab54bb0311a33a373782d2ebf9199e888d74",
+    "src/blocked_streaming_scalar.cpp": "0b2f23f1b427e8eb5e10f0b9b3dff607e0cf085572275d0d45e1c18e6307a695",
+    "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+    "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+    "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+    "src/omp_routes.cpp": "f0486adf5e88c7765ed51fc15c3b8a1f5e5d8f2055b5476cf5bf538dd4a19a60",
+    "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+    "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+    "src/simd_routes.cpp": "0fb6720a93e569dcbc4d113ee48e33644a21eb132bbed1344f42dffcdd650803",
+    "src/blocked_streaming_internal.h": "4f943b07c257661293d369f6dbcfe5d5aa75dcaa47fc9c8cf2bde5d289cb23ca",
+    "src/simd_row.h": "f59a554a5df99ae57aefe03e3ec61b886175292db4148d17f2bd57d0428fbb50",
+    "include/attn.h": "b2bcb6f42919fce6838fad6cc1dab223f5c143e000426446334dfc173d212b32",
+    "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+    "tools/bench_scalar.cpp": "7c81affcdd9641001b4d961a3370c08dc1b7010582a12c04844dcb1e49d858ab",
+    "tools/run_scalar_bench.py": "7d68d8e81b13f90499449764ca3e898ab294b94edd45c707df085178d25523d0",
+    "tools/build_integrated.py": "e0d8e67e6f4b4bdb0b8c0e3d9d68fd31bb855723aab68847dd9f72f017483ca6",
+    "tools/run_project_grid.py": "5d7b3262b465df0098dd78747509d43989943c82805fdd984931316277162384",
+    "build.bat": "6504052e050018a4406dcb3a333e58f0163473b1936994bc9a9fa41ccbedf3a5",
+    "build.sh": "40d11092d88cee34a9127d3ca57d450c507a169d35c3504ab47295c875c5feaf"
+  },
+  "binary_sha256": "ec79664567419e4bc0925d440b11cdc7c7a489b329133bff5847727527d71d96",
+  "build": [
+    "status=passed",
+    "compiler=g++.exe (GCC) 16.2.0",
+    "base_flags=-std=c++17 -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude",
+    "simd_extra_flags=-mavx2",
+    "openmp_extra_flags=-fopenmp",
+    "benchmark_defines=ATTN_WITH_SIMD",
+    "simd_test_defines=ATTN_TEST_SIMD",
+    "scalar_translation_units=baseline flags; no AVX2",
+    "avx2_translation_units=src/simd_routes.cpp src/blocked_streaming_avx2.cpp"
+  ],
+  "suite": "optimized",
+  "benchmark_arguments": [
+    "--mode",
+    "openmp",
+    "--threads",
+    "2",
+    "--L",
+    "4096",
+    "--d",
+    "64",
+    "--dv",
+    "64",
+    "--query-block",
+    "16",
+    "--warmup",
+    "10",
+    "--reps",
+    "20",
+    "--seed",
+    "20261020",
+    "--streaming",
+    "--key-block",
+    "256"
+  ],
+  "os": "Windows-11-10.0.26200-SP0",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "threads": "per variant",
+  "openmp_environment": {
+    "OMP_WAIT_POLICY": "PASSIVE"
+  },
+  "affinity": "not pinned by the harness",
+  "power_mode": "not controlled by the harness",
+  "timing_scope": "complete native kernel including resets; allocation, inputs, oracle, checks and I/O excluded",
+  "quartiles": "inclusive linear interpolation at p*(n-1)",
+  "status": "passed",
+  "variant_threads": [
+    {
+      "route": "full_matrix",
+      "mode": "openmp",
+      "threads": "2",
+      "actual_threads": "2"
+    },
+    {
+      "route": "rowwise",
+      "mode": "openmp",
+      "threads": "2",
+      "actual_threads": "2"
+    },
+    {
+      "route": "blocked_streaming",
+      "mode": "openmp",
+      "threads": "2",
+      "actual_threads": "2"
+    }
+  ],
+  "thread_check_scope": "streaming: actual compute team checked per timed call; full/row: preflight probe only; dynamic teams disabled",
+  "finished_utc": "2026-10-23T04:07:20.602442+00:00",
+  "exit_code": 0
+}
