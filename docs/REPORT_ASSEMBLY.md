@@ -20,6 +20,33 @@ These are review requests, not confirmed task assignments. Tang's
 Its normalization description, integration status and MSVC timings must not be
 copied as facts about the current GCC experiment.
 
+## What to send back on PR #5
+
+Please name the part reviewed and either list specific corrections or confirm
+that its current code and explanation can be used in the report. A short comment
+is enough to start; link a file or line when reporting a problem. Acknowledging
+receipt does not confirm the implementation or the conclusions.
+
+Each implementation owner should also check their section of the final report
+and their contribution record. The shared measurements do not replace the
+owners' interpretation. Report assembly, video preparation and submission
+owners still need to be agreed by the group.
+
+## Which computer to use
+
+The final proposal specifies one documented CPU for the comparisons. The current
+main results were collected on an Intel Core Ultra 7 356H with Windows 11 and
+GCC 16.2.0. All nine variants use that common environment. Do not compare a
+baseline time from one computer with an optimized time from another as an
+algorithm speedup.
+
+Another computer may check that the project builds and runs. Repeating the study
+on a second CPU is an optional extension, not a prerequisite for this handoff.
+Keep its measurements separate and run the relevant baselines on that machine.
+The proposal's Week 6 plan still includes reproducing frozen results: once the
+group chooses its final version and report figures, agree on that final
+reproduction check. It need not be split among four computers.
+
 ## Tables and figures already available
 
 - Chen's section contains both proposal tables: L128 and L4096, with scalar T1,
