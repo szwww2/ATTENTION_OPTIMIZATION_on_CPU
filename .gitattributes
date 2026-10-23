@@ -1,2 +1,5 @@
 # CSV writers may emit CRLF; store reproducible text with LF in Git.
 *.csv text eol=lf
+
+# Preserve all recorded evidence bytes and SHA256 bindings in this export.
+examples/controlled_20261023/** -text

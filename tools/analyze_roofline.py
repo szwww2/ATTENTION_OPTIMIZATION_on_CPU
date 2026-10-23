@@ -46,7 +46,8 @@ def traffic_rows(selected):
                 assumptions += "; query block, score tile and online m/l/u remain cached; no DRAM scratch spills"
             else:
                 count = traffic(length, d, dv, route == "full_matrix", refill)
-                scenario = "kv_refill_per_query_score_spill" if refill else "operands_once_cold_score_spill"
+                suffix = "score_spill" if route == "full_matrix" else "cached_row"
+                scenario = ("kv_refill_per_query_" if refill else "operands_once_cold_") + suffix
                 assumptions = ("Q once; K/V per query" if refill else "Q/K/V once")
                 assumptions += "; full score 5S" if route == "full_matrix" else "; row scratch cached"
             rows.append(dict(

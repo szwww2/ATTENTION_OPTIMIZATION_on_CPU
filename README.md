@@ -9,13 +9,13 @@ Deadline 13 Nov 2026, 23:59.
 
 统一测试工具已接入全矩阵、逐行、分块三条路线的普通版、SIMD 版和 OpenMP 版，共九种实现。它们用相同输入验答案、计时，自动保存原始数据、汇总表和运行环境。
 
-10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。七套数值测试通过，完成一轮 60 配置、1,200 次计时的[三路线接入试跑](examples/three_routes_pilot_20261023/README.md)。这轮耗时有明显波动，前段与其他编译测试有重叠，先用来检查流程；正式比较前还要检查运行条件、确认块大小并复测。
+10 月 23 日完成三轮完整测试，每轮 60 个配置，共保存 3,600 次原始计时。先固定 Bq=16，比较 Bk=128/256/512，再按预定规则选用 Bk=128。PyTorch CPU 对照、带宽与计算参考实验也已完成。[结果、图表和原始数据](examples/controlled_20261023/README.md)
 
-正式实验工具也已补齐：先比较三种块大小并固定参数，再跑三轮完整配置；同时保存实际 CPU 范围、电源状态和程序版本。分块路线已接入 PyTorch 对照，结果图也增加了三条路线的流量模型。代码检查通过，新的正式数据还没采集。[运行方法](docs/CONTROLLED_STUDY.md)
+这批结果可用于讨论和写报告，但小尺寸仍有明显波动。在 L=4096、d=dv=64 时，三条路线在这台电脑上都是 4 线程比 8 线程快，不能推广成所有电脑的结论。Roofline 使用假设的内存流量；目前没有实测 DRAM 流量。[完整运行方法](docs/CONTROLLED_STUDY.md)
 
 10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。旧数据单独保留；实际 DRAM 流量尚未测量。
 
-当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它接在早期测试工具的 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 之上，两者仍待审查、处理与 `main` 的合并冲突。
+当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它接在早期测试工具的 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 之上，供队友审查，尚未合并到 `main`。接下来共同确认图表和解释，再整理报告。
 
 分析脚本会先核对原始数据，再生成汇总表和比较图。[首轮历史数据](examples/integrated_20261021/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
 
@@ -65,8 +65,9 @@ checks and plots, an allocating PyTorch CPU comparison, and a roofline reference
 experiment. Run instructions: [native results](docs/RESULT_ANALYSIS.md),
 [PyTorch](docs/PYTORCH_COMPARISON.md), [roofline](docs/ROOFLINE_REFERENCE.md).
 Blocked streaming is included in both the native tests (`--streaming`) and the
-PyTorch API comparison. The controlled three-batch experiment is ready to run;
-its new measurements and interpretation are still pending.
+PyTorch API comparison. The three-batch study and its data checks are complete;
+see [the collected results](examples/controlled_20261023/README.md).
+The team still needs to review the interpretation and finish the report.
 
 ## How we work
 
