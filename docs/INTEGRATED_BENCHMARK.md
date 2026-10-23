@@ -81,6 +81,7 @@ Tang's additional tools, documents and original measurements are preserved.
 His MSVC results and Cui's earlier results remain separate historical experiments;
 they are not pooled into the new nine-variant measurements.
 
+- Full-matrix scalar and SIMD now finish all scores, then all row softmax operations, then PV. The earlier implementations completed each row immediately despite allocating full-matrix scratch.
 - Rowwise SIMD now normalizes each probability before PV, matching the scalar version. Tang's original version divided the accumulated output instead.
 - SIMD PV still uses a different loop order from scalar PV. Results compare these implementations; they do not isolate vector instructions from locality and loop-order effects.
 - The primitive test now rejects non-finite value-accumulation output. Both existing scalar suites remain in place.

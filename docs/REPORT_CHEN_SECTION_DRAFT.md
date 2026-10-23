@@ -51,7 +51,9 @@ L=4096, d=dv=64; native call latency in ms:
 | Rowwise | 1769.8580 | 770.4230 | 252.5525 |
 | Blocked streaming | 1239.4055 | 775.8390 | 253.3935 |
 
-T4 was faster than T8 at the larger shape. The following table keeps that result
+At L4096, T4 was faster than T8 for all three routes in every batch. At L128,
+T4 also had lower three-batch median latency, but T8 was faster for all three
+routes in batch 2. The small-shape result is less consistent. The following table keeps the L4096 result
 alongside the paired speedups:
 
 At L=4096, d=dv=64, the medians across the three batch medians are:

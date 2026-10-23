@@ -24,7 +24,7 @@ copied as facts about the current GCC experiment.
 
 - Chen's section contains both proposal tables: L128 and L4096, with scalar T1,
   SIMD T1 and SIMD + OpenMP T8 for all three routes. It also keeps the T4 results,
-  since T4 was faster on this machine.
+  since T4 was faster at L4096 on this machine.
 - The [results directory](../examples/controlled_20261023/README.md) has latency,
   thread scaling and paired-speedup plots. Pick the figures that support the
   report; there is no need to include every intermediate plot.
