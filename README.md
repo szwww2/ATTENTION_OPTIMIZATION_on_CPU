@@ -22,7 +22,9 @@ Deadline 13 Nov 2026, 23:59.
 
 这台电脑上，L=4096、d=dv=64 时三条路线都是 4 线程比 8 线程快。小尺寸波动较大；roofline 的内存流量是模型估算。具体数据和限制都在结果总览里。
 
-代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。报告草稿已补上提案四个假设的结论和计时成本说明，另附正式 GCC 程序的汇编证据。本次只补文档和证据，原始实验数据不变。
+代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。报告草稿已补上提案四个假设的结论和计时成本说明，另附正式 GCC 程序的汇编证据。
+
+复查时还确认：这次测量用的程序中，`expf` 会把单个数转成 double，调用 `exp` 后再转回 float。这些操作包含在计时内，但没有单独测它们占多少时间。报告和证据说明已补清楚，算法和原始实验数据未改。
 
 这个 PR 包含 #4 的工作，仍保留草稿。请李检查基线和参考答案，唐检查 SIMD/OpenMP 的接入，崔检查分块路线和块大小说明；大家再一起定报告用图和最终版本。看结果不需要重新跑实验；需要检查时可以先用保存的数据重建图表。
 

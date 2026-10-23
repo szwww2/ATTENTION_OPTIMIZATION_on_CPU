@@ -251,3 +251,65 @@ Static instructions: 498; ymm instructions: 15; packed FP add/mul: 5; direct exp
   ...
    14000559e:	vaddss %xmm0,%xmm0,%xmm0
 
+
+== expf: statically linked float-to-double wrapper
+0000000140037b20 <expf>:
+   140037b20:	sub    $0x28,%rsp
+   140037b24:	cvtss2sd %xmm0,%xmm0
+   140037b28:	call   140037900 <exp>
+   140037b2d:	cvtsd2ss %xmm0,%xmm0
+   140037b31:	add    $0x28,%rsp
+   140037b35:	ret
+   140037b36:	nop
+   140037b37:	nop
+   140037b38:	nop
+   140037b39:	nop
+   140037b3a:	nop
+   140037b3b:	nop
+   140037b3c:	nop
+   140037b3d:	nop
+   140037b3e:	nop
+   140037b3f:	nop
+
+== exp: general finite-input x87 calculation path
+The branch to 0x140037a50 follows input checks; zero and special-value paths are omitted here.
+  ...
+   140037a50:	movsd  %xmm2,0x38(%rsp)
+   140037a56:	fldl   0x38(%rsp)
+   140037a5a:	fldl2e
+   140037a5c:	fmul   %st(1),%st
+   140037a5e:	sub    $0x8,%rsp
+   140037a62:	fnstcw 0x4(%rsp)
+   140037a66:	movzwl 0x4(%rsp),%eax
+   140037a6b:	or     $0xc,%ah
+   140037a6e:	mov    %ax,(%rsp)
+   140037a72:	fldcw  (%rsp)
+   140037a75:	frndint
+   140037a77:	fld    %st(1)
+   140037a79:	frndint
+   140037a7b:	fldcw  0x4(%rsp)
+   140037a7f:	add    $0x8,%rsp
+   140037a83:	fld    %st(1)
+   140037a85:	fldt   0xcece5(%rip)        # 140106770 <c0>
+   140037a8b:	fld    %st(2)
+   140037a8d:	fmul   %st(1),%st
+   140037a8f:	fsubp  %st,%st(2)
+   140037a91:	fld    %st(4)
+   140037a93:	fsub   %st(3),%st
+   140037a95:	fmulp  %st,%st(1)
+   140037a97:	faddp  %st,%st(1)
+   140037a99:	fldt   0xcecc1(%rip)        # 140106760 <c1>
+   140037a9f:	fmul   %st(4),%st
+   140037aa1:	faddp  %st,%st(1)
+   140037aa3:	f2xm1
+   140037aa5:	fld1
+   140037aa7:	faddp  %st,%st(1)
+   140037aa9:	fstp   %st(1)
+   140037aab:	fscale
+   140037aad:	fstp   %st(1)
+   140037aaf:	fstp   %st(1)
+   140037ab1:	fstpl  0x38(%rsp)
+   140037ab5:	movsd  0x38(%rsp),%xmm0
+   140037abb:	add    $0x48,%rsp
+   140037abf:	ret
+  ...
