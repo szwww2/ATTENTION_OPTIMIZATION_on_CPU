@@ -17,11 +17,14 @@ Deadline 13 Nov 2026, 23:59.
 | 多线程加速后的效率 | [线程效率表](examples/thread_efficiency_20261023/README.md) |
 | Roofline 假设和图 | [Roofline 分析](examples/controlled_20261023/roofline_analysis/README.md) |
 | 我的实验方法与结果段落，供合并进小组报告 | [英文报告草稿](docs/REPORT_CHEN_SECTION_DRAFT.md) |
+| 正式程序使用 SIMD 的证据 | [GCC 汇编核对](docs/GCC_CODEGEN_EVIDENCE.md) |
 | 跑代码、重建图表、查看机器信息 | [九版本测试](docs/INTEGRATED_BENCHMARK.md) · [重建统计和图](examples/controlled_20261023/README.md) · [机器记录](examples/machine_20261023/README.md) |
 
 这台电脑上，L=4096、d=dv=64 时三条路线都是 4 线程比 8 线程快。小尺寸波动较大；roofline 的内存流量是模型估算。具体数据和限制都在结果总览里。
 
-代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它包含 #4 的工作，目前仍是草稿、未合并。请大家检查各自路线的接入与结果解释，再确认报告用图并合并到 `main`。看结果不需要重新跑实验；需要检查时可以先用保存的数据重建图表。
+代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。报告草稿已补上提案四个假设的结论和计时成本说明，另附正式 GCC 程序的汇编证据。本次只补文档和证据，原始实验数据不变。
+
+这个 PR 包含 #4 的工作，仍保留草稿。请李检查基线和参考答案，唐检查 SIMD/OpenMP 的接入，崔检查分块路线和块大小说明；大家再一起定报告用图和最终版本。看结果不需要重新跑实验；需要检查时可以先用保存的数据重建图表。
 
 <details>
 <summary>以前的实验和详细说明</summary>
