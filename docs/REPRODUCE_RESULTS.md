@@ -64,8 +64,9 @@ comparisons. Explain variation rather than expecting identical milliseconds.
 A fresh GitHub checkout of `838739f` built on the same Windows/GCC machine.
 All seven C++ suites, the nine-mode tests and the small example passed.
 Saved native, PyTorch, roofline and efficiency analyses were regenerated;
-eight generated CSV tables matched the archived values field for field. This checks the published files
-and instructions using installed dependencies; it is not a second-machine
+eight generated CSV tables matched the archived values field for field. This
+checks the published files and instructions using installed dependencies; it
+is not a second-machine
 test or a new full performance run.
 
 Git attributes preserve CSV and Python file bytes. This avoids false modified
