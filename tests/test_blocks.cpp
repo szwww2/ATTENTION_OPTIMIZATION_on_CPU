@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -29,6 +31,32 @@ struct Case {
 };
 
 const std::size_t kBlockSizes[] = {1, 0, 2, 3, 5, 7, 16, 33, 64, 128, 512};
+
+// Check allocation sizes without attempting the enormous allocations themselves.
+void workspace_bounds() {
+    const attn::Shape s{4, 1, 1};
+    note(attn::rowwise_workspace_elems(s, 0) == 4 &&
+         attn::rowwise_omp_workspace_elems(s, 0, 0) == 4,
+         "zero block and nonpositive helper thread count retain their fallback");
+    note(attn::rowwise_workspace_elems(s, 7) == 28 &&
+         attn::rowwise_omp_workspace_elems(s, 7, 3) == 84,
+         "Bq larger than L retains the existing workspace layout");
+    const auto max_size = std::numeric_limits<std::size_t>::max();
+    const auto max_floats = max_size / sizeof(float);
+    note(attn::rowwise_workspace_elems({1, 1, 1}, max_floats) == max_floats,
+         "largest byte-representable element count is accepted");
+    const auto rejects_overflow = [](auto call, const char* label) {
+        bool rejected = false;
+        try { call(); } catch (const std::overflow_error&) { rejected = true; }
+        note(rejected, label);
+    };
+    rejects_overflow([&] { attn::rowwise_workspace_elems(s, max_size / s.L + 1); },
+                     "overflowing Bq*L is rejected instead of wrapping to zero");
+    rejects_overflow([&] { attn::rowwise_workspace_elems(s, max_floats / s.L + 1); },
+                     "scalar scratch byte overflow is rejected");
+    rejects_overflow([&] { attn::rowwise_omp_workspace_elems({1, 1, 1}, max_floats / 2 + 1, 2); },
+                     "threaded scratch byte overflow is rejected");
+}
 
 // fixed-seed shuffle, so the order repeats
 void shuffle_rows(std::vector<std::size_t>& v, std::uint64_t seed) {
@@ -153,6 +181,7 @@ void run_case(const Case& c) {
 int main() {
     std::printf("CEG5206 GP8 - W2 block-decomposition invariance suite (row-wise scalar route)\n");
     std::printf("checks: block-size invariance, row-schedule invariance, contract per decomposition\n\n");
+    workspace_bounds();
 
     const Case cases[] = {
         {"single_row", 1, 64, 64, 1, 1.0f},

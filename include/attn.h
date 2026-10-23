@@ -5,6 +5,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
+#include <stdexcept>
 #include <vector>
 
 namespace attn {
@@ -19,15 +21,20 @@ inline std::size_t qk_elems(const Shape& s) { return s.L * s.d; }
 inline std::size_t v_elems(const Shape& s) { return s.L * s.dv; }
 // Workspace size in floats.
 inline std::size_t full_matrix_workspace_elems(const Shape& s) { return s.L * s.L; }
+// Reject element/byte-count overflow before callers allocate the rowwise scratch.
 inline std::size_t rowwise_workspace_elems(const Shape& s, std::size_t query_block) {
     const std::size_t bq = (query_block == 0) ? 1 : query_block;
+    if (s.L && bq > std::numeric_limits<std::size_t>::max() / sizeof(float) / s.L)
+        throw std::overflow_error("rowwise workspace size overflow");
     return bq * s.L;
 }
 inline std::size_t rowwise_omp_workspace_elems(const Shape& s, std::size_t query_block,
                                                int threads) {
-    const std::size_t bq = (query_block == 0) ? 1 : query_block;
+    const std::size_t one = rowwise_workspace_elems(s, query_block);
     const std::size_t workers = (threads > 0) ? static_cast<std::size_t>(threads) : 1;
-    return workers * bq * s.L;
+    if (one > std::numeric_limits<std::size_t>::max() / sizeof(float) / workers)
+        throw std::overflow_error("rowwise threaded workspace size overflow");
+    return workers * one;
 }
 
 // Buffers for one call.
