@@ -25,8 +25,9 @@ class EvidenceTests(unittest.TestCase):
     @unittest.skipIf(API is None, "Pass a completed API grid directory")
     def test_api_data_and_corruption(self):
         rows, _, _ = load_api_grid(API)
-        self.assertEqual(len(rows), 36)
-        first = json.loads((API / "manifest.json").read_text())["jobs"][0]["id"]
+        manifest = json.loads((API / "manifest.json").read_text())
+        self.assertEqual(len(rows), len(manifest["jobs"]) * (4 if manifest.get("schema_version") == 2 else 3))
+        first = manifest["jobs"][0]["id"]
         for corruption in (
             "backend",
             "summary",
@@ -68,7 +69,7 @@ class EvidenceTests(unittest.TestCase):
                     elif corruption == "input_hash":
                         data["input_sha256"]["Q"] = "0" * 64
                     else:
-                        data["unavailable_routes"] = []
+                        data["unavailable_routes"] = ["blocked_streaming"] if manifest.get("schema_version") == 2 else []
                     path.write_text(json.dumps(data))
                 else:
                     path = (

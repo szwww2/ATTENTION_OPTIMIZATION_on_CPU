@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import hashlib
+import json
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -44,6 +46,13 @@ def main():
     record = BUILD / "integrated_build.txt"
     # A failed rebuild must not leave a successful build record behind.
     record.write_text("status=building\n", encoding="utf-8")
+    binding = BUILD / "integrated_build.json"
+    binding.write_text('{"status":"building"}\n', encoding="utf-8")
+    source_files = sorted([*ROOT.glob("src/*.cpp"), *ROOT.glob("src/*.h"), *ROOT.glob("include/*.h"),
+                           ROOT / "tools/bench_scalar.cpp", Path(__file__)])
+    def hashes():
+        return {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_files}
+    before = hashes()
     try:
         version = subprocess.check_output(
             [CXX, "--version"], cwd=ROOT, text=True,
@@ -81,6 +90,8 @@ def main():
             "tools/bench_scalar.cpp", ["-DATTN_WITH_SIMD", *OMP_FLAGS],
         )
         link_program("attn_bench_all", [*core, simd, omp, *streaming_objects, benchmark], openmp=True)
+        if before != hashes():
+            raise RuntimeError("Source changed during build")
         record.write_text(
             "status=passed\n"
             + "compiler=" + version + "\n"
@@ -94,9 +105,13 @@ def main():
             encoding="utf-8",
         )
         print("Built integrated benchmark and seven test executables.")
+        binding.write_text(json.dumps({"status":"passed", "source_sha256":before,
+            "binary_sha256":hashlib.sha256((BUILD/("attn_bench_all"+SUFFIX)).read_bytes()).hexdigest(),
+            "compiler":version, "base_flags":BASE_FLAGS, "simd_flags":SIMD_FLAGS, "omp_flags":OMP_FLAGS},indent=2)+'\n',encoding="utf-8")
         return 0
-    except (OSError, subprocess.CalledProcessError) as error:
+    except (OSError, subprocess.CalledProcessError, RuntimeError) as error:
         record.write_text("status=failed\n", encoding="utf-8")
+        binding.write_text('{"status":"failed"}\n', encoding="utf-8")
         print("Integrated build failed:", error, file=sys.stderr)
         return 1
 

@@ -321,7 +321,18 @@ def load_grid(folder):
             skipped.append(job)
             continue
         checked, environment, files = check_run(folder, job, manifest)
+        if "cpu_order" in manifest:
+            expected_cpus = sorted(manifest["cpu_order"][:job["threads"]])
+            require(sorted(job["cpu_ids"]) == expected_cpus, "Job CPU selection differs from policy")
+            require(environment.get("requested_cpu_ids") == expected_cpus, "Requested CPU evidence differs")
+            current = environment.get("runtime_conditions", {})
+            require(current.get("allowed_cpu_ids") == expected_cpus, "Observed process affinity differs")
+            require(current == environment.get("runtime_conditions_after"), "Runtime conditions changed")
         conditions = {field: environment[field] for field in ENV_FIELDS}
+        if "cpu_order" in manifest:
+            conditions["cpu_order"] = manifest["cpu_order"]
+            conditions["ac_line_status"] = environment["runtime_conditions"].get("ac_line_status")
+            conditions["power_scheme_guid"] = environment["runtime_conditions"].get("power_scheme_guid")
         if common is None:
             common = conditions
         require(

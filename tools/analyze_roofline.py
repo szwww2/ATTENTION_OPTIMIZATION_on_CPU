@@ -24,6 +24,74 @@ def traffic(length, d, dv, full, refill):
     return operands + (20 * length * length if full else 0)
 
 
+def traffic_rows(selected):
+    """Explicit DRAM scenarios; workspace capacity is evidence for neither traffic nor residency."""
+    rows = []
+    for r in selected:
+        route, length, d, dv = r["route"], r["L"], r["d"], r["dv"]
+        if route not in ("full_matrix", "rowwise", "blocked_streaming"):
+            raise ValueError("No traffic model for route: " + route)
+        blocked = route == "blocked_streaming"
+        bq, bk = r.get("query_block", 0), r.get("key_block", 0)
+        if blocked and (not 1 <= bq <= length or not 1 <= bk <= length):
+            raise ValueError("Blocked model requires effective query/key block sizes")
+        flops = 2 * length**2 * (d + dv)
+        for refill in (False, True):
+            if blocked:
+                visits = (length + bq - 1) // bq if refill else 1
+                count = 4 * length * d + 4 * length * (d + dv) * visits + 8 * length * dv
+                scenario = ("kv_refill_per_query_block_cached_tile" if refill
+                            else "operands_once_cold_cached_tile")
+                assumptions = ("Q once; K/V per query block" if refill else "Q/K/V once")
+                assumptions += "; query block, score tile and online m/l/u remain cached; no DRAM scratch spills"
+            else:
+                count = traffic(length, d, dv, route == "full_matrix", refill)
+                scenario = "kv_refill_per_query_score_spill" if refill else "operands_once_cold_score_spill"
+                assumptions = ("Q once; K/V per query" if refill else "Q/K/V once")
+                assumptions += "; full score 5S" if route == "full_matrix" else "; row scratch cached"
+            rows.append(dict(
+                route=route, mode=r["mode"], L=length, d=d, dv=dv, threads=r["threads"],
+                query_block=bq, key_block=bk if blocked else 0,
+                workspace_bytes_capacity=r["workspace_bytes"],
+                online_state_bytes_per_thread=4 * bq * (dv + 2) if blocked else 0,
+                scenario=scenario, F_mat=flops, native_median_ms=r["median_ms"],
+                effective_gflops=flops / r["median_ms"] / 1e6,
+                dram_bytes_model=count, arithmetic_intensity_model=flops / count,
+                dram_bytes_counter="", traffic_evidence="model_assumption",
+                assumptions=assumptions + "; cold ordinary O stores incl RFO; scenarios are not bounds",
+            ))
+    return rows
+
+
+def check_machine_conditions(calibration, native):
+    """Check available compatibility evidence, retaining support for legacy calibration records."""
+    if calibration["cpu"] != native["cpu"]:
+        raise ValueError("Calibration and native grid describe different CPUs")
+    if "os" in calibration and calibration["os"] != native["os"]:
+        raise ValueError("Calibration and native grid describe different operating systems")
+    build = dict(line.split("=", 1) for line in native["build"] if "=" in line)
+    if calibration["compiler"] != build.get("compiler"):
+        raise ValueError("Calibration and native grid use different compilers")
+    expected_flags = (build["base_flags"] + " " + build["openmp_extra_flags"]).split()
+    if calibration["flags"] != expected_flags:
+        raise ValueError("Calibration and native grid use different base/OpenMP flags")
+    scope = ("CPU, OS, compiler and flags" if "os" in calibration
+             else "CPU, compiler and flags; legacy calibration has no OS record")
+    order = native.get("cpu_order")
+    if order or calibration.get("cpu_order"):
+        if not order or calibration.get("cpu_order") != order:
+            raise ValueError("Calibration and native grid use different ordered CPU policies")
+        for threads in (1, 2, 4, 8):
+            conditions = calibration.get("runtime_conditions_by_threads", {}).get(str(threads), {})
+            if conditions.get("allowed_cpu_ids") != sorted(order[:threads]):
+                raise ValueError("Calibration process affinity differs from ordered policy")
+            for field in ("ac_line_status", "power_scheme_guid"):
+                if field in native and conditions.get(field) != native[field]:
+                    raise ValueError("Calibration power conditions differ from native grid")
+        scope += "; ordered CPU eligibility and recorded power conditions"
+    return scope
+
+
 def check_calibration(folder):
     env = json.loads((folder / "environment.json").read_text(encoding="utf-8"))
     if env.get("status") != "passed" or env.get("exit_code") != 0:
@@ -78,6 +146,7 @@ def main():
     parser.add_argument("--calibration", type=Path, required=True)
     parser.add_argument("--grid", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--thread-scaling-note", default="", help="Annotation for heterogeneous CPU sets")
     args = parser.parse_args()
     if args.out.exists():
         parser.error("Use a new output directory")
@@ -86,43 +155,14 @@ def main():
     calibration_env = json.loads(
         (args.calibration / "environment.json").read_text(encoding="utf-8")
     )
-    if calibration_env["cpu"] != environment["cpu"]:
-        raise ValueError("Calibration and native grid describe different CPUs")
+    compatibility_scope = check_machine_conditions(calibration_env, environment)
     # Limit the score-spill illustration to the largest proposal shape.
     selected = [
         r for r in native if r["L"] == 4096 and r["d"] == r["dv"] == 64 and r["mode"] != "scalar"
     ]
     if not selected:
         raise ValueError("No available L4096 SIMD/OpenMP cases")
-    rows = []
-    for r in selected:
-        flops = 2 * r["L"] ** 2 * (r["d"] + r["dv"])
-        for refill in (False, True):
-            count = traffic(r["L"], r["d"], r["dv"], r["route"] == "full_matrix", refill)
-            rows.append(
-                dict(
-                    route=r["route"],
-                    mode=r["mode"],
-                    L=r["L"],
-                    d=r["d"],
-                    dv=r["dv"],
-                    threads=r["threads"],
-                    scenario=(
-                        "kv_refill_per_query_score_spill"
-                        if refill
-                        else "operands_once_cold_score_spill"
-                    ),
-                    F_mat=flops,
-                    native_median_ms=r["median_ms"],
-                    effective_gflops=flops / r["median_ms"] / 1e6,
-                    dram_bytes_model=count,
-                    arithmetic_intensity_model=flops / count,
-                    dram_bytes_counter="",
-                    traffic_evidence="model_assumption",
-                    assumptions=("Q once; K/V per query" if refill else "Q/K/V once")
-                    + "; cold ordinary O stores incl RFO; full score 5S; row scratch cached; scenarios are not bounds",
-                )
-            )
+    rows = traffic_rows(selected)
     args.out.mkdir(parents=True)
     save_csv(args.out / "traffic_scenarios.csv", rows)
     import matplotlib
@@ -153,14 +193,21 @@ def main():
         title="Read-stream reference envelopes",
     )
     axes[0].legend()
-    for route, label in (("full_matrix", "Full matrix"), ("rowwise", "Rowwise")):
+    for route, label in (("full_matrix", "Full matrix"), ("rowwise", "Rowwise"),
+                         ("blocked_streaming", "Blocked streaming")):
         values = sorted(
             (r for r in selected if r["route"] == route and r["mode"] == "openmp"),
             key=lambda r: r["threads"],
         )
-        axes[1].plot(
-            [r["threads"] for r in values], [r["gflops"] for r in values], "o-", label=label
+        if not values:
+            continue
+        regular = [r for r in values if r["threads"] <= 4]
+        line, = axes[1].plot(
+            [r["threads"] for r in regular], [r["gflops"] for r in regular], "o-", label=label
         )
+        separate = [r for r in values if r["threads"] > 4]
+        axes[1].plot([r["threads"] for r in separate], [r["gflops"] for r in separate],
+                     "D", color=line.get_color())
     axes[1].set(
         xlabel="OpenMP threads",
         ylabel="Measured effective GFLOP/s",
@@ -171,13 +218,37 @@ def main():
     for ax in axes:
         ax.grid(alpha=0.2)
     fig.suptitle("Calibration and attention throughput — separate measurements", fontsize=15)
+    if args.thread_scaling_note:
+        fig.supxlabel(args.thread_scaling_note, fontsize=10)
     fig.savefig(args.out / "roofline_reference.png", dpi=160)
+    plt.close(fig)
+    # Horizontal alternatives change only assumed bytes, never the measured time.
+    fig, panels = plt.subplots(1, 2, figsize=(13, 5), layout="constrained")
+    for ax, threads, mode in zip(panels, (1, 4), ("simd", "openmp")):
+        rates = {r["workload"]: float(r["giga_units_per_second"])
+                 for r in calibration if int(r["threads"]) == threads}
+        ax.loglog(intensity, np.minimum(rates["avx2_mul_add"], rates["read_stream"] * intensity),
+                  color="#6b7280", linestyle="--", label="Measured reference workloads")
+        for route, label in (("full_matrix", "Full"), ("rowwise", "Rowwise"), ("blocked_streaming", "Blocked")):
+            points = [r for r in rows if r["route"] == route and r["mode"] == mode and r["threads"] == threads]
+            xs = [r["arithmetic_intensity_model"] for r in points]
+            ys = [r["effective_gflops"] for r in points]
+            ax.plot(xs, ys, "o:", label=label)
+        ax.set(xlabel="Assumed FLOP/byte (two scenarios per route)", ylabel="Measured effective GFLOP/s",
+               title=f"T={threads}, {mode}; L=4096, d=dv=64")
+        ax.grid(alpha=.2); ax.legend(fontsize=9)
+    fig.suptitle("Model placement: one selected native batch, DRAM bytes not measured", fontsize=14)
+    fig.supxlabel("Dotted spans are alternative assumptions, not confidence intervals or measured traffic bounds.", fontsize=10)
+    fig.savefig(args.out / "roofline_model_placement.png", dpi=160)
     plt.close(fig)
     write_json(
         args.out / "analysis.json",
         dict(
             status="passed",
             native_environment=environment,
+            calibration_environment=calibration_env,
+            compatibility_scope=compatibility_scope,
+            thread_scaling_note=args.thread_scaling_note,
             input_sha256=hashes,
             calibration_sha256={
                 f: hashlib.sha256((args.calibration / f).read_bytes()).hexdigest()
@@ -190,11 +261,13 @@ def main():
     (args.out / "README.md").write_text(
         "# Machine reference and attention throughput\n\n"
         "![Reference curves and measured throughput](roofline_reference.png)\n\n"
+        "![Two assumed traffic scenarios per route](roofline_model_placement.png)\n\n"
         "Left: measured AVX2 mul+add and read-stream reference curves. Right: native attention throughput "
         "from the selected grid. The panels use separate experiments; these are not verified hardware limits.\n\n"
-        "`traffic_scenarios.csv` contains two assumed DRAM traffic models for L=4096, d=dv=64. "
-        "Both assume cold ordinary output stores (including RFO), full score spilling with 5S traffic, "
-        "and row scratch retained in cache. They differ in whether K/V arrive once or per query. "
+        "`traffic_scenarios.csv` contains two assumed DRAM traffic scenarios per available route for L=4096, d=dv=64. "
+        "Both assume cold ordinary output stores (including RFO). Full/row scenarios retain the original "
+        "score-spill/cached-row assumptions. Blocked scenarios assume cached query, score and online state; "
+        "K/V arrive once or once per query block. Bq/Bk and scratch capacity are recorded separately. "
         "These scenarios are not measured lower/upper bounds. Actual DRAM bytes are unknown.\n\n"
         "See [model and calibration details]("
         + Path(

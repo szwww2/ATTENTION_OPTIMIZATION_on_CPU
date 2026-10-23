@@ -56,14 +56,16 @@ class BridgeTests(unittest.TestCase):
         for shape in ((1, 1, 1), (3, 7, 5), (7, 31, 33), (17, 32, 64)):
             q, k, v = self.bridge.inputs(*shape, 20261020)
             reference = self.bridge.prepare(q, k, v)
-            for route in range(6):
-                threads = 2 if route >= 4 else 1
+            for route in range(9):
+                threads = 2 if route in (4, 5, 8) else 1
                 self.assertEqual(self.bridge.lib.gp8_threads(threads), threads)
-                a = self.bridge.run(route, min(shape[0], 16), threads)
-                b = self.bridge.run(route, min(shape[0], 16), threads)
+                a = self.bridge.run(route, min(shape[0], 16), threads, min(shape[0], 4))
+                b = self.bridge.run(route, min(shape[0], 16), threads, min(shape[0], 4))
                 self.assertFalse(np.shares_memory(a, b))
                 check_output(a, reference)
                 check_output(b, reference)
+                if route in (6, 7, 8):
+                    self.assertEqual(self.bridge.last_actual_threads[route], threads)
 
     def test_seed_and_uniform_attention(self):
         first = self.bridge.inputs(3, 7, 5, 20261020)
@@ -78,14 +80,14 @@ class BridgeTests(unittest.TestCase):
         np.testing.assert_allclose(
             ref, np.broadcast_to(v.astype(np.float64).mean(axis=0), v.shape), atol=1e-14
         )
-        for route in range(6):
-            check_output(self.bridge.run(route, 3, 1), ref)
+        for route in range(9):
+            check_output(self.bridge.run(route, 3, 1, 2), ref)
 
     def test_reject_invalid_arguments(self):
         q, k, v = self.bridge.inputs(3, 7, 5, 1)
         self.bridge.prepare(q, k, v)
         for route, bq, threads in (
-            (6, 1, 1),
+            (9, 1, 1),
             (0, 0, 1),
             (0, 4, 1),
             (0, 1, 2),
@@ -101,6 +103,13 @@ class BridgeTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             self.bridge.prepare(q[:, ::2], k, v)
+
+    def test_blocked_argument_rejection(self):
+        self.bridge.prepare(*self.bridge.inputs(3, 7, 5, 1))
+        for route, bq, bk, threads in ((6, 1, 0, 1), (7, 1, 4, 1),
+                                       (8, 0, 1, 2), (7, 1, 1, 2), (8, 1, 1, 0)):
+            with self.assertRaises(RuntimeError):
+                self.bridge.run(route, bq, threads, bk)
 
     def test_torch_same_inputs(self):
         import torch

@@ -34,7 +34,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def summarize(text, expected_keys):
+def summarize(text, expected_keys, phase=0):
     """从原始CSV重算统计并核查预定网格/样本/契约/顺序/workspace；不运行kernel。"""
     groups = {}
     rounds = {}
@@ -50,7 +50,7 @@ def summarize(text, expected_keys):
         actual = sorted(samples, key=lambda r: int(r["order"]))
         if [int(r["order"]) for r in actual] != list(range(len(choices))):
             raise ValueError("Invalid execution order")
-        if [int(r["key_block"]) for r in actual] != [choices[(j+index)%len(choices)] for j in range(len(choices))]:
+        if [int(r["key_block"]) for r in actual] != [choices[(j+index+phase)%len(choices)] for j in range(len(choices))]:
             raise ValueError("Candidate rotation mismatch")
     summaries = []
     for key, samples in sorted(groups.items()):

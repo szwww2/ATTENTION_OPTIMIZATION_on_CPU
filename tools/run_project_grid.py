@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from runtime_conditions import parse_cpu_list
 
 ROOT = Path(__file__).resolve().parent.parent
 MIB = 1024 * 1024
@@ -69,7 +70,12 @@ def main():
     )
     parser.add_argument("--key-block", type=bounded(1, 4096), default=256)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--cpu-order", help="ordered CPU IDs; serial uses first, OpenMP uses first T")
+    parser.add_argument("--job-order", choices=("forward", "reverse", "rotate"), default="forward")
     args = parser.parse_args()
+    cpu_order = parse_cpu_list(args.cpu_order) if args.cpu_order else None
+    if cpu_order and len(cpu_order) < min(8, args.physical_cores):
+        parser.error("CPU order is shorter than the planned maximum thread count")
     out = (ROOT / args.out).resolve()
     try:
         relative_out = out.relative_to(ROOT)
@@ -119,6 +125,8 @@ def main():
                 status="unavailable", reason="memory planning allowance exceeds budget"
             )
         jobs.append(job)
+        if cpu_order:
+            job["cpu_ids"] = cpu_order[:workers]
         if not args.streaming:
             missing.append(
                 dict(
@@ -134,6 +142,10 @@ def main():
                 )
             )
 
+    if args.job_order == "reverse":
+        jobs.reverse()
+    elif args.job_order == "rotate":
+        jobs = jobs[len(jobs)//2:] + jobs[:len(jobs)//2]
     manifest = dict(
         created_utc=datetime.now(timezone.utc).isoformat(),
         status="planned",
@@ -141,17 +153,20 @@ def main():
         physical_cores=args.physical_cores,
         thread_grid=threads,
         query_block=args.query_block,
-        block_setting="fixed for this run; not a blocked-route tuning result",
+        block_setting="fixed for this grid; selection provenance belongs to the study frozen_settings.json when launched by run_controlled_study",
         warmup=args.warmup,
         reps=args.reps,
         seed=args.seed,
         memory_budget_mib=args.memory_mib,
         memory_estimate="buffers + one spare L*L FP32 matrix, 25% margin, 64 MiB reserve; not measured RSS",
         jobs=jobs,
+        job_order=args.job_order,
         unavailable_routes=missing,
     )
     if args.streaming:
         manifest.update(streaming=True, key_block=args.key_block)
+    if cpu_order:
+        manifest["cpu_order"] = cpu_order
     out.mkdir(parents=True)
     manifest_path = out / "manifest.json"
 
@@ -173,6 +188,7 @@ def main():
         if job["status"] == "unavailable":
             continue
         job["status"] = "running"
+        job["started_utc"] = datetime.now(timezone.utc).isoformat()
         save()
         command = [
             sys.executable,
@@ -202,6 +218,8 @@ def main():
         ]
         if args.streaming:
             command += ["--streaming", "--key-block", str(args.key_block)]
+        if cpu_order:
+            command += ["--cpu-list", ",".join(map(str, job["cpu_ids"]))]
         print("Run", job["id"], flush=True)
         try:
             result = subprocess.run(command, cwd=ROOT)
@@ -209,6 +227,7 @@ def main():
         except OSError as error:
             job.update(exit_code=1, error_type=type(error).__name__)
         job["status"] = "passed" if job["exit_code"] == 0 else "failed"
+        job["finished_utc"] = datetime.now(timezone.utc).isoformat()
         if job["exit_code"]:
             manifest["status"] = "failed"
             save()

@@ -9,10 +9,15 @@ import statistics
 
 from analyze_results import read_csv
 from compare_pytorch import save_csv, write_json
+from runtime_conditions import parse_cpu_list
 
 
 def load_api_grid(folder):
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    schema = manifest.get("schema_version", 1)
+    if type(schema) is not int or schema not in (1, 2):
+        raise ValueError("Unsupported API grid schema")
+    streaming = schema == 2
     if manifest["status"] != "passed":
         raise ValueError("API grid did not finish")
     if not isinstance(manifest["physical_cores"], int) or manifest["physical_cores"] < 1:
@@ -24,10 +29,18 @@ def load_api_grid(folder):
             if t <= manifest["physical_cores"]
         }
     )
-    if manifest["thread_grid"] != threads or manifest["unavailable_routes"] != [
-        "blocked_streaming"
-    ]:
+    unavailable = [] if streaming else ["blocked_streaming"]
+    if manifest["thread_grid"] != threads or manifest["unavailable_routes"] != unavailable:
         raise ValueError("Thread plan or availability record mismatch")
+    if streaming and any(type(manifest.get(f)) is not int or not 1 <= manifest[f] <= 4096
+                         for f in ("query_block", "key_block")):
+        raise ValueError("Invalid API block plan")
+    cpu_order = manifest.get("cpu_order")
+    if cpu_order is not None and (
+        not streaming or not isinstance(cpu_order, list) or len(cpu_order) < max(threads)
+        or any(type(c) is not int or c < 0 for c in cpu_order) or len(set(cpu_order)) != len(cpu_order)
+    ):
+        raise ValueError("Invalid ordered CPU policy")
     expected = {
         (l, d, 1) for l, d in ((128, 64), (512, 64), (2048, 64), (4096, 64), (512, 32), (2048, 32))
     }
@@ -47,6 +60,8 @@ def load_api_grid(folder):
             raise ValueError("Invalid job id")
         paths = [folder / name / f for f in ("environment.json", "raw.csv", "summary.csv")]
         env = json.loads(paths[0].read_text(encoding="utf-8"))
+        if env.get("schema_version", 1) != schema:
+            raise ValueError("Case/grid schema mismatch")
         if (
             job["status"] != "passed"
             or job["exit_code"] != 0
@@ -76,10 +91,31 @@ def load_api_grid(folder):
             or env["torch_interop_threads"] != 1
         ):
             raise ValueError("Thread evidence mismatch")
-        if env["query_block"] != min(job["L"], 16) or env["unavailable_routes"] != [
-            "blocked_streaming"
-        ]:
+        requested_bq = manifest["query_block"] if streaming else 16
+        if env["query_block"] != min(job["L"], requested_bq) or env["unavailable_routes"] != unavailable:
             raise ValueError("Block setting or missing-route record mismatch")
+        if streaming:
+            if (env.get("requested_query_block") != manifest["query_block"]
+                or env.get("requested_key_block") != manifest["key_block"]
+                or env.get("key_block") != min(job["L"], manifest["key_block"])):
+                raise ValueError("Blocked tile setting mismatch")
+            if env.get("blocked_actual_threads") != job["threads"]:
+                raise ValueError("Blocked compute team mismatch")
+            expected_cpu_list = manifest.get("requested_cpu_list")
+            if cpu_order:
+                expected_ids = cpu_order[:job["threads"]]
+                if job.get("cpu_ids") != expected_ids:
+                    raise ValueError("Job CPU selection differs from ordered policy")
+                expected_cpu_list = ",".join(map(str, expected_ids))
+            if env.get("requested_cpu_list") != expected_cpu_list:
+                raise ValueError("CPU affinity request mismatch")
+            if not isinstance(env.get("runtime_conditions"), dict) or not env["runtime_conditions"]:
+                raise ValueError("Missing runtime conditions")
+            current = env["runtime_conditions"]
+            if current != env.get("runtime_conditions_after"):
+                raise ValueError("Runtime conditions changed")
+            if expected_cpu_list is not None and current.get("allowed_cpu_ids") != sorted(parse_cpu_list(expected_cpu_list)):
+                raise ValueError("Observed process affinity differs from request")
         policy = env["pool_policy"]
         if (
             policy["OMP_NUM_THREADS"] != str(job["threads"])
@@ -110,6 +146,16 @@ def load_api_grid(folder):
         conditions["pool_policy_except_threads"] = {
             k: v for k, v in policy.items() if k != "OMP_NUM_THREADS"
         }
+        if streaming:
+            conditions.update(schema_version=schema,
+                              requested_query_block=manifest["query_block"],
+                              requested_key_block=manifest["key_block"],
+                              cpu_order=cpu_order,
+                              requested_cpu_list=manifest.get("requested_cpu_list"),
+                              thread_scaling_note=manifest.get("thread_scaling_note", ""),
+                              ac_line_status=current.get("ac_line_status"),
+                              power_scheme_guid=current.get("power_scheme_guid"),
+                              thread_check_scope=env["thread_check_scope"])
         if common is None:
             common = conditions
         if conditions != common:
@@ -117,10 +163,12 @@ def load_api_grid(folder):
         raw, summary = read_csv(paths[1]), read_csv(paths[2])
         mode = "simd" if job["threads"] == 1 else "simd_omp"
         names = ["full_" + mode, "row_" + mode, "pytorch_sdpa"]
+        if streaming:
+            names.insert(2, "blocked_" + mode)
         if (
-            len(summary) != 3
+            len(summary) != len(names)
             or {s["variant"] for s in summary} != set(names)
-            or len(raw) != 3 * env["reps"]
+            or len(raw) != len(names) * env["reps"]
         ):
             raise ValueError("Missing or extra variants/samples")
         for row in summary:
@@ -128,7 +176,7 @@ def load_api_grid(folder):
             if sorted(int(r["sample"]) for r in samples) != list(range(env["reps"])):
                 raise ValueError("Missing/duplicate samples")
             if any(
-                int(r["order"]) != (names.index(row["variant"]) - int(r["sample"])) % 3
+                int(r["order"]) != (names.index(row["variant"]) - int(r["sample"])) % len(names)
                 for r in samples
             ):
                 raise ValueError("Invalid rotated order")
@@ -156,6 +204,8 @@ def load_api_grid(folder):
                     d=job["d"],
                     dv=job["dv"],
                     threads=job["threads"],
+                    query_block=env["query_block"],
+                    key_block=env.get("key_block", 0) if row["variant"].startswith("blocked_") else 0,
                     **row,
                     backend=(
                         ";".join(env["torch_sdpa_operators"])
@@ -199,6 +249,7 @@ def main():
         for prefix, label in (
             ("full_", "Full matrix"),
             ("row_", "Rowwise"),
+            ("blocked_", "Blocked streaming"),
             ("pytorch_", "PyTorch SDPA"),
         ):
             selected = sorted(
@@ -209,6 +260,8 @@ def main():
                 ),
                 key=lambda r: r["L"],
             )
+            if not selected:
+                continue
             x = [r["L"] for r in selected]
             y = [float(r["median_ms"]) for r in selected]
             errors = [
@@ -228,6 +281,8 @@ def main():
         lengths = sorted({r["L"] for r in rows if r["threads"] == t and r["d"] == 64})
         ax.set_xticks(lengths, labels=[str(length) for length in lengths])
     fig.suptitle("CPU API time: median and Q1-Q3 (not CI); custom T1=SIMD, T>1=OpenMP", fontsize=13)
+    if env.get("thread_scaling_note"):
+        fig.supxlabel(env["thread_scaling_note"], fontsize=10)
     fig.savefig(args.out / "pytorch_api.png", dpi=160)
     plt.close(fig)
     write_json(args.out / "analysis.json", record)

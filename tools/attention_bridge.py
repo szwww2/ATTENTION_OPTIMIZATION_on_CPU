@@ -58,8 +58,10 @@ class Bridge:
         self.lib.gp8_fill.argtypes = [ct.c_int] * 3 + [ct.c_uint64] + [FP32] * 3 + [SIZE] * 2
         self.lib.gp8_oracle.argtypes = [ct.c_int] * 3 + [FP32] * 3 + [FP64] + [SIZE] * 3
         self.lib.gp8_run.argtypes = [ct.c_int] * 6 + [FP32] * 4 + [SIZE] * 3
+        self.lib.gp8_run_blocked.argtypes = [ct.c_int] * 7 + [FP32] * 4 + [SIZE] * 3 + [ct.POINTER(ct.c_int)]
         self.lib.gp8_threads.argtypes = [ct.c_int]
-        for name in ("gp8_fill", "gp8_oracle", "gp8_run", "gp8_threads"):
+        self.last_actual_threads = {}
+        for name in ("gp8_fill", "gp8_oracle", "gp8_run", "gp8_run_blocked", "gp8_threads"):
             getattr(self.lib, name).restype = ct.c_int
 
     @staticmethod
@@ -97,9 +99,17 @@ class Bridge:
         )
         return ref
 
-    def run(self, route, bq=16, threads=1):
+    def run(self, route, bq=16, threads=1, bk=256):
         # Both output allocation and the C++ workspace lifetime are inside the call.
         output = np.empty((self.shape[0], self.shape[2]), np.float32)
+        if route in (6, 7, 8):
+            actual = ct.c_int()
+            self.checked(self.lib.gp8_run_blocked(
+                route - 6, *self.shape, bq, bk, threads, *self.pointers,
+                output.ctypes.data_as(FP32), self.nq, self.nv, output.size, ct.byref(actual),
+            ))
+            self.last_actual_threads[route] = actual.value
+            return output
         self.checked(
             self.lib.gp8_run(
                 route,

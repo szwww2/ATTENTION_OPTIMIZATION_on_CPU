@@ -18,14 +18,18 @@ and T=1/2/4/8. Record whether 512 MiB exceeds the tested machine's cache capacit
 
 The reference curve is `min(C, B*I)`, where C is measured arithmetic GFLOP/s
 and B is measured read-stream payload GB/s. It is not a verified upper bound
-for mixed attention reads/writes. Affinity and clock frequency are not fixed.
+for mixed attention reads/writes. Read each run's recorded affinity and runtime
+conditions; an allowed CPU set does not fix clock frequency or worker placement.
 The arithmetic reference omits attention's repeated dot-product reductions,
 exponentials, normalization and query-block scheduling. Its timing still includes
 OpenMP team launch and the final checksum reduction.
 
 Attention throughput uses `F = 2*L*L*(d+dv)` divided by complete native kernel
 time. This counts matrix multiply/add work; it excludes softmax operations from
-the numerator while retaining their execution time in the denominator.
+the numerator while retaining their execution time in the denominator. For blocked
+streaming this also excludes online-state rescaling and updates from the numerator;
+their execution remains inside the complete kernel time. Thus this is effective
+matrix-work throughput, not the measured count of all floating-point instructions.
 
 ## Traffic assumptions
 
@@ -46,7 +50,7 @@ within one softmax row stay in cache. It omits extra traffic beyond these stated
 assumptions and is not inferred from workspace capacity.
 
 The current Bq=16 groups rows for workspace/scheduling; it does not implement
-K/V reuse across 16 queries. Increasing threads does not divide total FLOPs
+K/V reuse across 16 queries in the rowwise route. Increasing threads does not divide total FLOPs
 or modeled traffic by T. Scalar strided accesses introduce additional cache-line
 effects, so the scenario table covers SIMD/OpenMP only.
 
@@ -56,7 +60,34 @@ first scenario assumes. The main figure therefore keeps reference curves and
 measured attention throughput in separate panels. It does not assign automatic
 memory-bound/compute-bound labels or percentage-of-peak scores.
 
-The blocked implementation will need its own traffic model, including its
-online softmax state and tile reuse, before a three-route conclusion is possible.
+For blocked streaming, let Nq=ceil(L/effective_Bq). The additional route uses
+two explicitly assumed scenarios:
+
+| Blocked scenario | Modeled DRAM bytes |
+|---|---|
+| Q/K/V read once, cold output | `4*L*(2*d+3*dv)` |
+| K/V refilled once per query block | `4*L*d + 4*L*(d+dv)*Nq + 8*L*dv` |
+
+Both assume that the current query block, score tile and online m/l/u state remain
+in cache throughout their reuse, with no scratch spills to DRAM. The second assumes
+K/V are reused across the queries inside each block but are refetched for each next
+query block. At L=4096, d=dv=64 and Bq=16 it gives 515 MiB; the read-once scenario
+gives 5 MiB. These numbers are model calculations, not measured traffic or bounds.
+
+The CSV records effective Bq/Bk, complete scratch capacity and online-state capacity
+separately. Complete scratch is `4*T*Bq*(Bk+dv+2)` bytes; online state alone is
+`4*Bq*(dv+2)` bytes per worker. Neither capacity is added to DRAM traffic as if it
+were a transfer count. Bk affects the working set and state-update frequency; it does
+not change the formula under the stated cached-state assumption. A larger Bk can make
+that assumption less plausible. Cache capacity alone does not prove residency.
+
+The analyzer rejects unknown routes instead of silently applying rowwise's model.
+It includes all available routes in the measured-throughput panel while retaining
+support for historical two-route grids. CPU description, compiler and base/OpenMP
+flags must match the calibration. OS must also match when the calibration records it;
+the analysis explicitly identifies legacy calibration files with no OS evidence.
+With an ordered CPU policy, calibration and native runs must use the same first-T
+processor sets and compatible recorded power conditions. Use the analyzer's optional
+`--thread-scaling-note` to show any mixed-core limitation directly below the plot.
 
 Model reference: [Williams, Waterman and Patterson, Roofline](https://escholarship.org/uc/item/5tz795vq).

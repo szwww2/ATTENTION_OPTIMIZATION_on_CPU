@@ -22,7 +22,7 @@ bool avx2() { return __builtin_cpu_supports("avx2"); }
 }
 
 // Return codes: 0 success, 1 invalid arguments, 2 AVX2 unavailable,
-// 3 allocation failure, 4 unexpected exception. Never unwind across ctypes.
+// 3 allocation failure, 4 unexpected exception, 5 team mismatch. Never unwind across ctypes.
 API int gp8_fill(int l, int d, int dv, unsigned long long seed,
                  float* q, float* k, float* v, std::size_t nq, std::size_t nv) {
     if (!q || !k || !v || !valid(l,d,dv,nq,nv)) return 1;
@@ -79,5 +79,29 @@ API int gp8_run(int route, int l, int d, int dv, int bq, int threads,
         case 5: attn::rowwise_simd_omp_fp32(s,q,k,v,bq,threads,scratch.data(),out); break;
         }
         return 0;
+    } catch (const std::bad_alloc&) { return 3; } catch (...) { return 4; }
+}
+
+// Separate entry preserves the original six-route ABI. mode: 0 scalar, 1 SIMD, 2 OpenMP.
+API int gp8_run_blocked(int mode, int l, int d, int dv, int bq, int bk, int threads,
+                        const float* q, const float* k, const float* v, float* out,
+                        std::size_t nq, std::size_t nv, std::size_t no, int* actual_threads) {
+    if (!q || !k || !v || !out || !actual_threads || !valid(l,d,dv,nq,nv) || no != nv
+        || mode < 0 || mode > 2 || bq < 1 || bq > l || bk < 1 || bk > l
+        || threads < 1 || threads > 64 || (mode < 2 && threads != 1)) return 1;
+    if (mode > 0 && !avx2()) return 2;
+    const attn::Shape s{std::size_t(l),std::size_t(d),std::size_t(dv)};
+    try {
+        const auto count = mode == 2
+            ? attn::blocked_streaming_omp_workspace_elems(s,bq,bk,threads)
+            : attn::blocked_streaming_workspace_elems(s,bq,bk);
+        if (count > 128ULL*1024*1024) return 1;
+        std::vector<float> scratch(count); // Same allocating-call boundary as full/row.
+        int actual = 1;
+        if (mode == 0) attn::blocked_streaming_scalar_fp32(s,q,k,v,bq,bk,scratch.data(),out);
+        else if (mode == 1) attn::blocked_streaming_simd_fp32(s,q,k,v,bq,bk,scratch.data(),out);
+        else attn::blocked_streaming_simd_omp_fp32(s,q,k,v,bq,bk,threads,scratch.data(),out,&actual);
+        *actual_threads = actual;
+        return actual == threads ? 0 : 5;
     } catch (const std::bad_alloc&) { return 3; } catch (...) { return 4; }
 }

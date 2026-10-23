@@ -74,6 +74,9 @@ def measure(calls, reference, warmup, reps, validate, clock=perf_counter_ns):
 
 
 def run_case(args):
+    from runtime_conditions import apply_cpu_affinity, capture_conditions
+
+    apply_cpu_affinity(args.cpu_list)
     # Configure pools before importing either runtime. Separate pools still exist.
     os.environ["OMP_WAIT_POLICY"] = "PASSIVE"
     os.environ["KMP_BLOCKTIME"] = "0"
@@ -86,6 +89,7 @@ def run_case(args):
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=False)
     env = dict(
+        schema_version=2,
         status="running",
         started_utc=datetime.now(timezone.utc).isoformat(),
         L=args.L,
@@ -95,10 +99,15 @@ def run_case(args):
         seed=args.seed,
         warmup=args.warmup,
         reps=args.reps,
-        query_block=min(args.L, 16),
+        requested_query_block=args.query_block,
+        requested_key_block=args.key_block,
+        query_block=min(args.L, args.query_block),
+        key_block=min(args.L, args.key_block),
         timing_scope="allocating CPU API: Python dispatch, output allocation, workspace allocation/reset/release and compute; output release outside timer",
         correctness_scope="precheck and last timed output for each variant; not every sample",
-        affinity="not pinned",
+        requested_cpu_list=args.cpu_list,
+        affinity="requested CPU list applied" if args.cpu_list else "not changed by runner",
+        runtime_conditions=capture_conditions(),
         power_mode="not changed by this runner",
         cpu=cpu_information(),
         os=platform.platform(),
@@ -118,7 +127,8 @@ def run_case(args):
         pool_note="GCC OpenMP and PyTorch runtimes are separate; equal requested thread counts do not imply equal placement",
         torch_version=torch.__version__,
         torch_build=torch.__config__.show(),
-        unavailable_routes=["blocked_streaming"],
+        unavailable_routes=[],
+        thread_check_scope="blocked: actual compute team checked in every API call; full/row: preflight probe only; PyTorch: requested pool configuration",
     )
     try:
         env["source_revision"] = subprocess.check_output(
@@ -129,7 +139,7 @@ def run_case(args):
         )
         env["runner_sha256"] = {
             f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest()
-            for f in ("tools/compare_pytorch.py", "tools/attention_bridge.py")
+            for f in ("tools/compare_pytorch.py", "tools/attention_bridge.py", "tools/runtime_conditions.py")
         }
         bridge = Bridge()
         env["bridge_build"] = bridge.build
@@ -157,10 +167,12 @@ def run_case(args):
             qt, kt, vt, dropout_p=0.0, is_causal=False
         )
         route = 2 if args.threads == 1 else 4
+        blocked_route = 7 if args.threads == 1 else 8
         mode = "simd" if args.threads == 1 else "simd_omp"
         calls = {
-            "full_" + mode: lambda: bridge.run(route, min(args.L, 16), args.threads),
-            "row_" + mode: lambda: bridge.run(route + 1, min(args.L, 16), args.threads),
+            "full_" + mode: lambda: bridge.run(route, env["query_block"], args.threads),
+            "row_" + mode: lambda: bridge.run(route + 1, env["query_block"], args.threads),
+            "blocked_" + mode: lambda: bridge.run(blocked_route, env["query_block"], args.threads, env["key_block"]),
             "pytorch_sdpa": sdpa,
         }
 
@@ -187,8 +199,14 @@ def run_case(args):
                 raise ValueError("Profiler did not identify the CPU SDPA backend")
             write_json(out / "environment.json", env)
             raw, summary = measure(calls, ref, args.warmup, args.reps, validate)
+        env["blocked_actual_threads"] = bridge.last_actual_threads[blocked_route]
+        if env["blocked_actual_threads"] != args.threads:
+            raise ValueError("Blocked compute team mismatch")
         if input_hash() != env["input_sha256"]:
             raise ValueError("An implementation modified its input")
+        env["runtime_conditions_after"] = capture_conditions()
+        if env["runtime_conditions_after"] != env["runtime_conditions"]:
+            raise ValueError("Runtime conditions changed during API comparison")
         save_csv(out / "raw.csv", raw)
         save_csv(out / "summary.csv", summary)
         env.update(status="passed", exit_code=0)
@@ -207,6 +225,9 @@ def main():
     parser.add_argument("--d", type=int, default=64)
     parser.add_argument("--dv", type=int, default=64)
     parser.add_argument("--threads", type=int, default=1)
+    parser.add_argument("--query-block", type=int, default=16)
+    parser.add_argument("--key-block", type=int, default=256)
+    parser.add_argument("--cpu-list", default=None, help="Optional allowed CPU indices; inherited by workers")
     parser.add_argument("--seed", type=int, default=20261020)
     parser.add_argument("--warmup", type=int, default=10)
     parser.add_argument("--reps", type=int, default=20)
@@ -216,6 +237,8 @@ def main():
         and 1 <= args.d <= 128
         and 1 <= args.dv <= 128
         and 1 <= args.threads <= 16
+        and 1 <= args.query_block <= 4096
+        and 1 <= args.key_block <= 4096
         and 1 <= args.warmup <= 1000
         and 3 <= args.reps <= 1000
         and 0 <= args.seed < 2**64

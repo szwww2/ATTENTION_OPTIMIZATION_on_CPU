@@ -11,7 +11,9 @@ Deadline 13 Nov 2026, 23:59.
 
 10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。七套数值测试通过，完成一轮 60 配置、1,200 次计时的[三路线接入试跑](examples/three_routes_pilot_20261023/README.md)。这轮耗时有明显波动，前段与其他编译测试有重叠，先用来检查流程；正式比较前还要检查运行条件、确认块大小并复测。
 
-10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。三路线的外部对照和最终分析还在继续；实际 DRAM 流量尚未测量。
+正式实验工具也已补齐：先比较三种块大小并固定参数，再跑三轮完整配置；同时保存实际 CPU 范围、电源状态和程序版本。分块路线已接入 PyTorch 对照，结果图也增加了三条路线的流量模型。代码检查通过，新的正式数据还没采集。[运行方法](docs/CONTROLLED_STUDY.md)
+
+10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。旧数据单独保留；实际 DRAM 流量尚未测量。
 
 当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它接在早期测试工具的 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 之上，两者仍待审查、处理与 `main` 的合并冲突。
 
@@ -62,8 +64,9 @@ Chen's benchmark work now includes the shared scalar/SIMD/OpenMP tests, saved-re
 checks and plots, an allocating PyTorch CPU comparison, and a roofline reference
 experiment. Run instructions: [native results](docs/RESULT_ANALYSIS.md),
 [PyTorch](docs/PYTORCH_COMPARISON.md), [roofline](docs/ROOFLINE_REFERENCE.md).
-Blocked streaming now joins the native tests with `--streaming`; its PyTorch API
-comparison and final three-route interpretation remain to be added.
+Blocked streaming is included in both the native tests (`--streaming`) and the
+PyTorch API comparison. The controlled three-batch experiment is ready to run;
+its new measurements and interpretation are still pending.
 
 ## How we work
 

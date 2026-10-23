@@ -16,11 +16,13 @@ def main():
     record.write_text('{"status": "building"}\n', encoding="utf-8")
     sources = [
         (f"src/{name}.cpp", [])
-        for name in ("input", "oracle_fp64", "full_matrix_scalar", "rowwise_scalar")
+        for name in ("input", "oracle_fp64", "full_matrix_scalar", "rowwise_scalar", "blocked_streaming_scalar")
     ]
     sources += [
         ("src/simd_routes.cpp", ["-mavx2"]),
         ("src/omp_routes.cpp", ["-fopenmp"]),
+        ("src/blocked_streaming_avx2.cpp", ["-mavx2"]),
+        ("src/blocked_streaming_optimized.cpp", ["-fopenmp"]),
         ("tools/attention_c_api.cpp", ["-fopenmp"]),
     ]
     objects, commands = [], []

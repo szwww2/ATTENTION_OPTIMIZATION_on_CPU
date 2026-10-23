@@ -15,11 +15,14 @@ import subprocess
 from build_integrated import ROOT, BASE_FLAGS, CXX
 from compare_pytorch import save_csv, write_json
 from run_scalar_bench import cpu_information
+from runtime_conditions import apply_cpu_affinity, capture_conditions, parse_cpu_list
+import platform
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--cpu-order", help="use first T listed processor IDs per calibration workload")
     args = parser.parse_args()
     out = Path(args.out)
     if out.exists():
@@ -29,7 +32,10 @@ def main():
         status="running",
         started_utc=datetime.now(timezone.utc).isoformat(),
         cpu=cpu_information(),
-        affinity="not pinned",
+        os=platform.platform(),
+        affinity="explicit CPU list per job" if args.cpu_order else "not pinned",
+        cpu_order=parse_cpu_list(args.cpu_order) if args.cpu_order else None,
+        runtime_conditions_by_threads={},
         power_mode="not changed by runner",
         buffer_bytes=512 * 1024**2,
         interpretation="read payload and independent AVX2 mul+add references, not strict attention performance bounds",
@@ -72,10 +78,18 @@ def main():
         )
         raw = []
         for threads in (1, 2, 4, 8):
+            if args.cpu_order:
+                cpus=parse_cpu_list(args.cpu_order)
+                if len(cpus)<threads:raise ValueError("Insufficient CPUs in calibration order")
+                apply_cpu_affinity(",".join(map(str,cpus[:threads])))
+            before=capture_conditions()
             result = subprocess.run(
                 [str(binary), str(threads)], capture_output=True, text=True, check=True
             )
             rows = list(csv.DictReader(io.StringIO(result.stdout)))
+            after=capture_conditions()
+            if before != after:raise ValueError("Calibration runtime conditions changed")
+            env["runtime_conditions_by_threads"][str(threads)] = before
             if len(rows) != 14:
                 raise ValueError("Unexpected sample count")
             for row in rows:
