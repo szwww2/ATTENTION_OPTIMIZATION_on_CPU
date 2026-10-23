@@ -1,5 +1,10 @@
 # CSV writers may emit CRLF; store reproducible text with LF in Git.
 *.csv text eol=lf
 
+# Keep Python source fingerprints stable across Windows and Unix checkouts.
+*.py text eol=lf
+
 # Preserve all recorded evidence bytes and SHA256 bindings in this export.
 examples/controlled_20261023/** -text
+examples/thread_efficiency_20261023/** -text
+examples/machine_20261023/** -text

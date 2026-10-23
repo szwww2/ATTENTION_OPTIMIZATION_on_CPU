@@ -15,7 +15,9 @@ Deadline 13 Nov 2026, 23:59.
 
 10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。旧数据单独保留；实际 DRAM 流量尚未测量。
 
-当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它接在早期测试工具的 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 之上，供队友审查，尚未合并到 `main`。接下来共同确认图表和解释，再整理报告。
+补充的[线程效率表](examples/thread_efficiency_20261023/README.md)直接由这批数据计算，不用重新计时。[英文报告短稿 / Experimental methods and results](docs/REPORT_CHEN_SECTION_DRAFT.md)整理了方法、主要结果和分析限制；[机器记录](examples/machine_20261023/README.md)补上CPU类别与缓存数据。
+
+当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。PR 直接与 `main` 比较，已包含早期 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 的工作，大家集中看 #5 即可。仍是草稿，尚未合并；接下来共同确认图表和解释，再整理报告。
 
 分析脚本会先核对原始数据，再生成汇总表和比较图。[首轮历史数据](examples/integrated_20261021/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
 
