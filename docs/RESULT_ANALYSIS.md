@@ -28,7 +28,7 @@ The analyzer requires the full current grid plan, including explicit unavailable
 
 These checks validate the saved records. They do not rerun the FP64 comparison, prove that unrecorded machine conditions stayed fixed, or check every timed call's output. The benchmark checks correctness before timing and checks the last output after timing.
 
-The supported plan is currently the six serial shapes plus the two OpenMP shapes from `run_project_grid.py`, with full-matrix and rowwise routes. Extend the analyzer's plan/variant/workspace rules when blocked streaming is integrated; it should not silently omit a new route.
+The supported plan is the six serial shapes plus the two OpenMP shapes from `run_project_grid.py`. It accepts both the original two-route grid and the three-route grid made with `--streaming`. With at least eight physical cores, these contain 40 and 60 configurations respectively. Streaming records are also checked against the requested/effective query and key blocks and the complete online-softmax workspace formula.
 
 Files are found next to the manifest using each job's id. Historical `prefix` paths are deliberately ignored so a copied example can be analyzed independently. Failed, incomplete or mixed-environment data stop the export. Unavailable jobs remain listed with their reasons. Existing output directories are never overwritten.
 

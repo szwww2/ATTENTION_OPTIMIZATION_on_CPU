@@ -29,8 +29,8 @@ def memory_estimate(
         (6 if mode == "serial" else 3) if streaming else (4 if mode == "serial" else 2)
     )
     bq = min(block, length)
-    # Q, K, V, spare output, FP64 reference, and the oracle's score row.
-    tensors = 24 * length * width + 8 * length
+    # Q/K/V, their saved copies, spare output, FP64 reference, oracle score row.
+    tensors = 36 * length * width + 8 * length
     scratch = (
         (2 * length * length + 2 * bq * length)
         if mode == "serial"
