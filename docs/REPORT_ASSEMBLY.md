@@ -1,40 +1,33 @@
 # Putting the group report together
 
-Chen's shared harness, experiments, analysis and results section are available.
-The report section now includes three figures with captions. Continue report
-assembly using these materials; specific corrections can be handled as they arise.
-The final group report and video are still to be assembled.
+The shared harness, experiments, analysis and experimental report section are
+available. The report section includes three figures with captions. The table
+below maps the report topics to their source material and technical checks.
+The final group report and video remain to be assembled.
 
 ## Sections and source material
 
 | Section | Material to use | Points to check together |
 |---|---|---|
 | Problem and course connection | Final proposal: the same attention calculation with different storage, SIMD and thread choices | Keep the CPU performance question and scope clear. |
-| Full-matrix and rowwise | `src/full_matrix_scalar.cpp`, `src/rowwise_scalar.cpp`, FP64 reference and [interface notes](INTEGRATION.md) | Li: check the baseline and numerical contract. |
-| Blocked streaming | [Algorithm and interface](STREAMING_CUIZIWEI.md), [SIMD/OpenMP implementation](STREAMING_OPTIMIZED.md) | Cui: check online softmax, scratch and tile interpretation. |
-| SIMD and OpenMP | [Current integration changes](INTEGRATED_BENCHMARK.md#integration-changes), [measured GCC executable](GCC_CODEGEN_EVIDENCE.md) | Tang: check shared primitives, loop order and thread explanation. |
-| Methods, results and limitations | [Chen's report section](REPORT_CHEN_SECTION_DRAFT.md), [collected results](../examples/controlled_20261023/README.md) | Chen and route owners: agree on the comparisons and conclusions. |
+| Full-matrix and rowwise | `src/full_matrix_scalar.cpp`, `src/rowwise_scalar.cpp`, FP64 reference and [interface notes](INTEGRATION.md) | Baseline phase order, reference calculation and numerical contract. |
+| Blocked streaming | [Algorithm and interface](STREAMING_CUIZIWEI.md), [SIMD/OpenMP implementation](STREAMING_OPTIMIZED.md) | Online softmax, scratch sizing and tile interpretation. |
+| SIMD and OpenMP | [Current integration changes](INTEGRATED_BENCHMARK.md#integration-changes), [measured GCC executable](GCC_CODEGEN_EVIDENCE.md) | Shared primitives, loop order and thread behavior. |
+| Methods, results and limitations | [Experimental report section](REPORT_CHEN_SECTION_DRAFT.md), [collected results](../examples/controlled_20261023/README.md) | Timing scope, paired comparisons, uncertainty and supported conclusions. |
 | Conclusion, references and contributions | Agreed findings and each member's actual work | Write together; each person checks their own contribution. |
 
-These checks follow the proposal's shared cross-review plan. They do not require
-an individual PR approval before Chen can continue technical checks or report
-preparation. Tang's
-[earlier report draft](REPORT_TANG_SECTION_DRAFT.md) is retained as history.
+These checks follow the proposal's shared cross-review plan. The
+[earlier SIMD/OpenMP report draft](REPORT_TANG_SECTION_DRAFT.md) is retained as history.
 Its normalization description, integration status and MSVC timings must not be
 copied as facts about the current GCC experiment.
 
-## Feedback and remaining group work
+## Review and finalization
 
-If something needs changing, name the file, result or explanation and the issue.
-Feedback can go in PR #5 or the group chat. No separate approval from all three
-implementation owners is required to continue Chen's work.
-
-The proposal still calls for all members to understand the numerical contract
-and results, cross-review the code and write the report together. Technical
-checks can use AI assistance; they do not establish that every member has
-personally understood or approved the result. Each member checks their actual
-contribution. Agree together on final report content, video preparation and
-submission; these are not automatically Chen's sole responsibility.
+Review comments should identify the relevant file, result or explanation.
+The final report should use one consistent implementation description, timing
+scope and measurement revision. Record contributions according to the work
+actually completed. The final report, video and submitted version are group
+deliverables under the proposal's shared review and writing plan.
 
 ## Which computer to use
 

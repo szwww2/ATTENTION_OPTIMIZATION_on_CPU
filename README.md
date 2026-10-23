@@ -5,9 +5,9 @@ Memory-Performance Trade-offs of Blocked and Streaming Attention on a CPU
 Welcome to CEG5206 team project, Team GP8! Group members are: Li Ruiqin, Cui Ziwei, Tang Zhenxiong, Chen Caoyu.
 Deadline 13 Nov 2026, 23:59.
 
-## 本轮实验结果（陈曹玉）
+## 统一实验结果
 
-已把三条路线的普通、SIMD 和 OpenMP 版接进统一测试，共九种实现。它们用相同输入检查答案，再计时。10 月 23 日完成三轮主实验，每轮 60 个配置，共 3,600 次原始计时；PyTorch CPU 对照、roofline 和线程效率也已整理好。
+全矩阵（full-matrix）、逐行（row-wise）和分块流式（blocked-streaming）Attention 的 scalar、AVX2 SIMD 和 static OpenMP 实现已接入统一 benchmark，共九种实现。各实现使用相同输入和 FP64 参考答案完成正确性检查，再进行计时。10 月 23 日完成三轮同机主实验，每轮 60 个配置，共 3,600 次原始计时；PyTorch CPU 对照、roofline 和线程效率分析也已完成。
 
 **先看下面的结果总览，再看需要的代码或数据。**
 
@@ -16,8 +16,8 @@ Deadline 13 Nov 2026, 23:59.
 | 结果总览、比较图、原始数据 | [三轮实验](examples/controlled_20261023/README.md) |
 | 多线程加速后的效率 | [线程效率表](examples/thread_efficiency_20261023/README.md) |
 | Roofline 假设和图 | [Roofline 分析](examples/controlled_20261023/roofline_analysis/README.md) |
-| 我的实验方法与结果段落，供合并进小组报告 | [英文报告草稿](docs/REPORT_CHEN_SECTION_DRAFT.md) |
-| 全组报告怎么拼、还缺什么 | [合稿清单](docs/REPORT_ASSEMBLY.md) |
+| 实验方法、结果、图表与限制说明 | [实验报告段落](docs/REPORT_CHEN_SECTION_DRAFT.md) |
+| 报告各部分对应的代码和材料 | [报告材料索引](docs/REPORT_ASSEMBLY.md) |
 | 正式程序使用 SIMD 的证据 | [GCC 汇编核对](docs/GCC_CODEGEN_EVIDENCE.md) |
 | 跑代码、重建图表、查看机器信息 | [九版本测试](docs/INTEGRATED_BENCHMARK.md) · [重建统计和图](examples/controlled_20261023/README.md) · [机器记录](examples/machine_20261023/README.md) |
 | 从新副本检查代码和结果 | [复现入口](docs/REPRODUCE_RESULTS.md) |
@@ -28,7 +28,7 @@ Deadline 13 Nov 2026, 23:59.
 
 报告草稿也补齐了提案要求的 L128/L4096 两张三路线对比表，以及实际误差。复查发现的超大 Bq 工作区溢出已加检查；正常参数和原始实验数据不变。
 
-这个 PR 包含 #4 的工作，仍保留草稿。我的统一测试、主实验、分析和实验段落已完成，图注和复现入口也已整理好。有具体问题可以直接留言，我继续处理；不用等每个人在 PR 批准后才开始合稿。全组接下来定报告内容和视频安排，最终版本确定后再做对应的结果复现。
+该分支通过 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5) 提供整合代码、实验数据和报告材料，并包含 #4 的改动。归档主实验对应测量版本 `f7b4b09`。新副本的构建、测试和保存数据重建已完成；定稿后的结果复现按最终选定版本记录。
 
 <details>
 <summary>以前的实验和详细说明</summary>
