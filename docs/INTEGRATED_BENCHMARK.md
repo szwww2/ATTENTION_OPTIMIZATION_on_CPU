@@ -38,6 +38,9 @@ python tools/run_scalar_bench.py --suite optimized --streaming --key-block 256 -
 Modes: `scalar` (two variants), `simd` (two), `serial` (scalar and SIMD, four), `openmp` (two), `all` (six).
 `--threads` applies to OpenMP variants; scalar and serial SIMD use one thread.
 Use a new output prefix for every run. See [SCALAR_BENCHMARK.md](SCALAR_BENCHMARK.md) for common fields and timing scope.
+On the tested Windows/GCC build, use an ASCII relative output prefix such as
+`results/nine_variants`. Non-ASCII output names can fail in the C++ filesystem
+conversion; the repository itself can reside in a Chinese-named directory.
 
 The additional CSV fields are `mode`, `threads` and `actual_threads`. Full/row
 use a preflight team probe. Streaming records its actual compute team and checks
@@ -82,6 +85,13 @@ they are not pooled into the new nine-variant measurements.
 - SIMD PV still uses a different loop order from scalar PV. Results compare these implementations; they do not isolate vector instructions from locality and loop-order effects.
 - The primitive test now rejects non-finite value-accumulation output. Both existing scalar suites remain in place.
 - Scalar and SIMD cases in the comparison come from this integrated build. Earlier Tang/Chen measurements are kept separate.
+
+The later rowwise workspace guard rejects element/byte-count overflow for
+extremely large direct-API block or thread arguments. It preserves normal sizes
+and does not change the attention loops. Rebuild after pulling this header change;
+the runner rejects a binary whose recorded sources no longer match. Archived
+23 October timings remain tied to their recorded source and executable, not to
+this later build.
 
 CPU affinity and power mode are not controlled by these scripts. Repeat runs under documented conditions before making final performance claims. Workspace bytes are not measured DRAM traffic.
 

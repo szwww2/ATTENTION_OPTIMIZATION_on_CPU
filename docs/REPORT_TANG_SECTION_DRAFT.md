@@ -1,5 +1,13 @@
 # Report draft: Tang Zhenxiong's SIMD and OpenMP contribution
 
+> **Historical draft from Tang's branch.** Keep its measurements separate from
+> the integrated GCC experiment. Three statements below have since changed:
+> full-matrix and rowwise SIMD now normalize probabilities **before** PV;
+> the full-matrix phase-order fix is included; and blocked streaming is
+> integrated in all three modes. Use the [current integration notes](INTEGRATED_BENCHMARK.md#integration-changes)
+> for implementation details and [Chen's experiment section](REPORT_CHEN_SECTION_DRAFT.md)
+> for the shared measurements. The original draft follows for reference.
+
 **Draft, not final performance text.** It deliberately separates verified
 implementation facts from exploratory single-machine timings.
 

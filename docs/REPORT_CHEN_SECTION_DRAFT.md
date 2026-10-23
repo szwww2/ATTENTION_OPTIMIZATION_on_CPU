@@ -14,7 +14,45 @@ Bq was fixed at 16. Three tuning batches compared Bk=128, 256 and 512 at L=2048,
 
 Each main batch contains 60 configurations: six input shapes for scalar/SIMD and L=128/4096, d=dv=64 at T=1/2/4/8 for OpenMP. Each configuration has ten warm-ups and twenty recorded samples. Three batches use forward, reverse and rotated job orders. All 3,600 timings are retained. Speedups are calculated within each batch before taking the median and range across the three ratios. Ranges are descriptive, not confidence intervals.
 
+## Correctness results
+
+All 180 native configuration instances passed the recorded pre-timing and
+final-output checks against the FP64 reference. Across these checks, the largest
+absolute error was 1.7554062e-7 and the largest relative error was 0.24080694.
+Relative error uses max(1e-8, abs(O64)) as the denominator. Its maximum occurred
+at L=2048, d=dv=32 in the full-matrix and rowwise SIMD cases.
+
+The relative-error maximum is not the pass/fail threshold. The contract tests
+each absolute error against 1e-4 + 1e-3 * abs(O64); every recorded absolute error
+was below even its absolute term, 1e-4. Relative error can be large near zero,
+so both metrics are reported. These maxima cover the main experiment checks,
+not all boundary-test inputs, and do not validate every intermediate timed output.
+
 ## Native results
+
+The proposal's route-by-mode tables are below. Each entry is the median of the
+three batch medians; each batch median uses 20 samples. Bq=16 and Bk=128 are
+fixed. OpenMP uses SIMD and eight threads in these tables. T8 uses mixed CPU
+efficiency classes on this machine.
+
+L=128, d=dv=64; native call latency in ms:
+
+| Route | Scalar T1 | SIMD T1 | SIMD + OpenMP T8 |
+|---|---:|---:|---:|
+| Full matrix | 1.3140 | 0.9065 | 0.3995 |
+| Rowwise | 1.2860 | 0.8920 | 0.3550 |
+| Blocked streaming | 1.2540 | 0.8690 | 0.3470 |
+
+L=4096, d=dv=64; native call latency in ms:
+
+| Route | Scalar T1 | SIMD T1 | SIMD + OpenMP T8 |
+|---|---:|---:|---:|
+| Full matrix | 1776.3865 | 775.3580 | 252.4205 |
+| Rowwise | 1769.8580 | 770.4230 | 252.5525 |
+| Blocked streaming | 1239.4055 | 775.8390 | 253.3935 |
+
+T4 was faster than T8 at the larger shape. The following table keeps that result
+alongside the paired speedups:
 
 At L=4096, d=dv=64, the medians across the three batch medians are:
 

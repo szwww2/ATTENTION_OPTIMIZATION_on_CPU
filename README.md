@@ -17,6 +17,7 @@ Deadline 13 Nov 2026, 23:59.
 | 多线程加速后的效率 | [线程效率表](examples/thread_efficiency_20261023/README.md) |
 | Roofline 假设和图 | [Roofline 分析](examples/controlled_20261023/roofline_analysis/README.md) |
 | 我的实验方法与结果段落，供合并进小组报告 | [英文报告草稿](docs/REPORT_CHEN_SECTION_DRAFT.md) |
+| 全组报告怎么拼、还缺什么 | [合稿清单](docs/REPORT_ASSEMBLY.md) |
 | 正式程序使用 SIMD 的证据 | [GCC 汇编核对](docs/GCC_CODEGEN_EVIDENCE.md) |
 | 跑代码、重建图表、查看机器信息 | [九版本测试](docs/INTEGRATED_BENCHMARK.md) · [重建统计和图](examples/controlled_20261023/README.md) · [机器记录](examples/machine_20261023/README.md) |
 
@@ -24,7 +25,7 @@ Deadline 13 Nov 2026, 23:59.
 
 代码、数据和说明已在 `dev/chencaoyu-integration`，集中 review [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。报告草稿已补上提案四个假设的结论和计时成本说明，另附正式 GCC 程序的汇编证据。
 
-复查时还确认：这次测量用的程序中，`expf` 会把单个数转成 double，调用 `exp` 后再转回 float。这些操作包含在计时内，但没有单独测它们占多少时间。报告和证据说明已补清楚，算法和原始实验数据未改。
+报告草稿也补齐了提案要求的 L128/L4096 两张三路线对比表，以及实际误差。复查发现的超大 Bq 工作区溢出已加检查；正常参数和原始实验数据不变。
 
 这个 PR 包含 #4 的工作，仍保留草稿。请李检查基线和参考答案，唐检查 SIMD/OpenMP 的接入，崔检查分块路线和块大小说明；大家再一起定报告用图和最终版本。看结果不需要重新跑实验；需要检查时可以先用保存的数据重建图表。
 
@@ -96,6 +97,24 @@ can still go straight to `main`.
 Writing a weekly note is also useful for the project report.
 
 ## Build and run
+
+The current comparison includes all nine implementations. On an AVX2-capable
+CPU with Python 3 and GCC available:
+
+```text
+python tools/build_integrated.py
+python tests/test_nine_mode_benchmark.py
+python tools/run_scalar_bench.py --suite optimized --streaming --key-block 128 --mode all --threads 2 --L 128 --query-block 16 --out results/nine_check
+```
+
+The last command is a small end-to-end check, not a replacement for the recorded
+study. It checks outputs, times all nine variants and saves CSVs plus environment
+records. Use a new output prefix each time. The script name `run_scalar_bench.py`
+is retained from the first stage; `--suite optimized --streaming` selects the
+integrated executable. See [all test commands](docs/INTEGRATED_BENCHMARK.md)
+and the [three-batch experiment procedure](docs/CONTROLLED_STUDY.md).
+
+### Earlier scalar-only build
 
 ```
 build.bat                    # Windows (MSYS2 g++)
