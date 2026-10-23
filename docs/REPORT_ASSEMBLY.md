@@ -1,12 +1,13 @@
 # Putting the group report together
 
-The shared experiment and Chen's results section are ready for review. The final
-group report and video are still to be assembled. This is a guide to the current
-material, not a record of a completed submission.
+Chen's shared harness, experiments, analysis and results section are available.
+The report section now includes three figures with captions. Continue report
+assembly using these materials; specific corrections can be handled as they arise.
+The final group report and video are still to be assembled.
 
 ## Sections and source material
 
-| Section | Material to use | Review still needed |
+| Section | Material to use | Points to check together |
 |---|---|---|
 | Problem and course connection | Final proposal: the same attention calculation with different storage, SIMD and thread choices | Keep the CPU performance question and scope clear. |
 | Full-matrix and rowwise | `src/full_matrix_scalar.cpp`, `src/rowwise_scalar.cpp`, FP64 reference and [interface notes](INTEGRATION.md) | Li: check the baseline and numerical contract. |
@@ -15,22 +16,25 @@ material, not a record of a completed submission.
 | Methods, results and limitations | [Chen's report section](REPORT_CHEN_SECTION_DRAFT.md), [collected results](../examples/controlled_20261023/README.md) | Chen and route owners: agree on the comparisons and conclusions. |
 | Conclusion, references and contributions | Agreed findings and each member's actual work | Write together; each person checks their own contribution. |
 
-These are review requests, not confirmed task assignments. Tang's
+These checks follow the proposal's shared cross-review plan. They do not require
+an individual PR approval before Chen can continue technical checks or report
+preparation. Tang's
 [earlier report draft](REPORT_TANG_SECTION_DRAFT.md) is retained as history.
 Its normalization description, integration status and MSVC timings must not be
 copied as facts about the current GCC experiment.
 
-## What to send back on PR #5
+## Feedback and remaining group work
 
-Please name the part reviewed and either list specific corrections or confirm
-that its current code and explanation can be used in the report. A short comment
-is enough to start; link a file or line when reporting a problem. Acknowledging
-receipt does not confirm the implementation or the conclusions.
+If something needs changing, name the file, result or explanation and the issue.
+Feedback can go in PR #5 or the group chat. No separate approval from all three
+implementation owners is required to continue Chen's work.
 
-Each implementation owner should also check their section of the final report
-and their contribution record. The shared measurements do not replace the
-owners' interpretation. Report assembly, video preparation and submission
-owners still need to be agreed by the group.
+The proposal still calls for all members to understand the numerical contract
+and results, cross-review the code and write the report together. Technical
+checks can use AI assistance; they do not establish that every member has
+personally understood or approved the result. Each member checks their actual
+contribution. Agree together on final report content, video preparation and
+submission; these are not automatically Chen's sole responsibility.
 
 ## Which computer to use
 
@@ -43,6 +47,8 @@ algorithm speedup.
 Another computer may check that the project builds and runs. Repeating the study
 on a second CPU is an optional extension, not a prerequisite for this handoff.
 Keep its measurements separate and run the relevant baselines on that machine.
+The [reproduction entry](REPRODUCE_RESULTS.md) separates saved-data checks,
+small functional runs and fresh performance measurements.
 The proposal's Week 6 plan still includes reproducing frozen results: once the
 group chooses its final version and report figures, agree on that final
 reproduction check. It need not be split among four computers.
@@ -74,7 +80,7 @@ reproduction check. It need not be split among four computers.
 3. Combine the report, check references and contributions, record the video,
    then choose the final commit or tag and the person submitting.
 
-The course Project Briefing (pp. 5–7) asks for one group PDF report, a 10–15 minute
+The course Project Briefing (pp. 3, 6–7) asks for one group PDF report, a 10–15 minute
 video link, the public GitHub link and final commit/tag, plus contribution and
 AI-use records in the submission. Keep these final records truthful to the work
 actually done. The Canvas Team Project page checked on 24 October gives

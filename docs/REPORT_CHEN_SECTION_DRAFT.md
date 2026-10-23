@@ -68,6 +68,21 @@ The speedup columns summarize within-batch ratios; dividing the displayed aggreg
 
 Parallel efficiency is E(T)=S(T)/T, with S(T) measured against the same route's OpenMP T1 in the same batch. At this shape, median T4 efficiencies are 93.55%, 89.06% and 88.47% for full matrix, rowwise and blocked streaming. T8 efficiencies fall to 38.43%, 38.14% and 37.15%. These ratios are not measured CPU utilization. T8 was slower than T4 for all three routes in this experiment; mixed CPU classes and static work assignment are possible explanations, not isolated causes. [All 24 efficiency summaries](../examples/thread_efficiency_20261023/README.md) also include L=128.
 
+![OpenMP latency for the three routes](../examples/controlled_20261023/summary/thread_latency.png)
+
+Figure 1. Four threads give lower median latency than eight in the three-batch
+summary. Each point is the median of three batch medians; bars show their
+minimum and maximum. T8 uses mixed CPU efficiency classes and is plotted
+separately. At L128, T8 was faster in batch 2, so the smaller-input ranking
+was not consistent across batches.
+
+![Paired OpenMP speedups](../examples/controlled_20261023/summary/thread_speedup.png)
+
+Figure 2. Larger inputs benefit more from four-thread execution in this study.
+Speedup uses the same route's OpenMP T1 time within each batch. Points and bars
+show the median and range of three paired ratios, not confidence intervals.
+T8's slowdown does not isolate a cause.
+
 Blocked scalar is faster, but its PV loop order and data reuse both differ from rowwise scalar. The result does not isolate the benefit of blocking alone. SIMD times are similar across the three routes. At T4, scratch capacities are 64 MiB, 1 MiB and 48.5 KiB respectively: smaller scratch did not produce a clear latency advantage in these SIMD/OpenMP results.
 
 At L2048, increasing both d and dv from 32 to 64 raises SIMD latency by 10.1%, 6.2% and 8.7% for full matrix, rowwise and blocked streaming. The counted matrix work doubles, but total time does not. The x87 exponential path behind `expf`, reductions, normalization, dependencies and data access are candidate explanations; these two shapes do not identify their individual time shares or establish a unique bottleneck.
@@ -90,6 +105,14 @@ A separate allocating API comparison measures the Python-facing custom routes ag
 Effective throughput uses F_mat=2L²(d+dv), divided by complete native time. The numerator counts matrix multiply/add work, not every softmax or online-state operation. Reference workloads measure AVX2 multiply/add without FMA and sequential reads. They are workload references, not verified hardware peak ceilings.
 
 The model plot uses native batch 1 and explicitly assumed DRAM traffic. For blocked streaming, the read-once scenario gives 5 MiB, while refilling K/V for each query block gives 515 MiB. The corresponding modeled arithmetic intensities are 819.2 and 7.953 FLOP/byte. These scenarios are neither measured traffic nor guaranteed bounds. Cache capacity alone cannot decide which scenario matches execution.
+
+![Attention under two traffic assumptions per route](../examples/controlled_20261023/roofline_analysis/roofline_model_placement.png)
+
+Figure 3. Changing the assumed traffic moves each implementation horizontally
+while its measured throughput stays fixed. Both panels use native batch 1 at
+L4096, d=dv64. The dashed curves come from reference workloads at the matching
+thread count, not verified hardware peaks. Dotted spans join alternative
+traffic assumptions; they are not measured bounds or confidence intervals.
 
 Thus the experiment directly demonstrates correctness checks, latency and scratch capacity for these implementations. It does not establish actual DRAM traffic or a unique bottleneck. In particular, the share of time spent in exp/softmax has not been profiled.
 
