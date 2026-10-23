@@ -15,7 +15,7 @@ The build uses GCC 16.2.0, `-O3 -fno-tree-vectorize -ffp-contract=off`, with `-m
 
 ## The exponential call inside softmax
 
-In this measured GCC/MinGW build, `expf` and `exp` are statically linked into the executable. `expf` converts its float argument to double (`cvtss2sd`), calls `exp`, then converts the returned double to float (`cvtsd2ss`). The general finite-input path in `exp` uses x87 instructions, including `frndint`, `f2xm1` and `fscale`; zero and special values have separate paths. This describes a double-argument/result interface, not a claim that every internal x87 operation is rounded to FP64.
+In this measured GCC/MinGW build, `expf` and `exp` are statically linked into the executable. `expf` converts its float argument to double (`cvtss2sd`), calls `exp`, then converts the returned double to float (`cvtsd2ss`). The general finite-input path in `exp` uses x87 instructions, including `frndint`, `f2xm1` and `fscale`; zero, non-finite and out-of-range inputs have separate paths. This describes a double-argument/result interface, not a claim that every internal x87 operation is rounded to FP64.
 
 These per-call conversions and exponential evaluations are inside the native timer. They do not convert the full Q/K/V arrays to FP64, and they are separate from the FP64 oracle outside the timer. Static inspection does not show how much runtime they consume or prove that they are the main bottleneck. This library path is specific to the recorded build; other compilers or math libraries may use different implementations.
 
