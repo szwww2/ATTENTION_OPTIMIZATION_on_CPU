@@ -11,7 +11,9 @@ Deadline 13 Nov 2026, 23:59.
 
 10 月 23 日接入崔子为的分块代码，补了块大小、完整工作区和实际线程数的记录。七套数值测试通过，完成一轮 60 配置、1,200 次计时的[三路线接入试跑](examples/three_routes_pilot_20261023/README.md)。这轮耗时有明显波动，前段与其他编译测试有重叠，先用来检查流程；正式比较前还要检查运行条件、确认块大小并复测。
 
-10 月 22 日补了三轮完整复测、PyTorch CPU 对照，以及 roofline 用的算术和带宽参考测试，原始数据和比较图都已保存。结果通过正确性检查，但部分配置的耗时仍有明显波动；实际 DRAM 流量尚未测到，流量分析目前使用明确列出假设的模型。[查看最新结果](examples/validation_20261022/README.md)。
+10 月 22 日的两路线复测、PyTorch CPU 对照和 roofline 参考实验见[历史两路线结果](examples/validation_20261022/README.md)。三路线的外部对照和最终分析还在继续；实际 DRAM 流量尚未测量。
+
+当前整合代码在 `dev/chencaoyu-integration`，见 [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5)。它接在早期测试工具的 [PR #4](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/4) 之上，两者仍待审查、处理与 `main` 的合并冲突。
 
 分析脚本会先核对原始数据，再生成汇总表和比较图。[首轮历史数据](examples/integrated_20261021/README.md) · [重新生成的方法](docs/RESULT_ANALYSIS.md)。
 

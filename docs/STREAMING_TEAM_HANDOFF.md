@@ -1,9 +1,12 @@
 # Streaming branch: team review and integration
 
-The user authorized committing and publishing `dev/cuiziwei` for team review.
-Earlier implementation notes saying "no commit/push" describe the status at
-completion of those phases. Measurements were made before committing; their
-recorded base SHA plus source hashes remain the measurement provenance.
+`dev/cuiziwei` contains the blocked-streaming implementation and its tests.
+The original measurements predate the commit; their base SHA and source hashes
+identify the measured code.
+
+As of 23 October, the streaming branch is in `main`. Chen's nine-variant benchmark
+is available for review in [PR #5](https://github.com/szwww2/ATTENTION_OPTIMIZATION_on_CPU/pull/5).
+The comparison matrix and remote heads below describe the earlier handoff.
 
 ## Required comparison matrix
 
@@ -66,6 +69,3 @@ before final merging; this checklist does not reassign the team's roles.
 - `examples/streaming_optimized_20261022/`: 24 configurations, 480 timings,
   environment/source hashes and same-build scalar comparisons.
 - `examples/streaming_cuiziwei_20261022/`: earlier scalar block-selection pilot.
-
-The user can share the branch for review; merging into main and creating a PR
-are separate actions, not implied by publishing the branch.
