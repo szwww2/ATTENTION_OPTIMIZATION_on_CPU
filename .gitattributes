@@ -1,0 +1,2 @@
+# CSV writers may emit CRLF; store reproducible text with LF in Git.
+*.csv text eol=lf

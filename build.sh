@@ -5,7 +5,7 @@ set -euo pipefail
 
 CXX=${CXX:-g++}
 STD="-std=c++17"
-SRC="src/oracle_fp64.cpp src/full_matrix_scalar.cpp src/rowwise_scalar.cpp src/input.cpp src/metrics.cpp"
+SRC="src/oracle_fp64.cpp src/full_matrix_scalar.cpp src/rowwise_scalar.cpp src/blocked_streaming_scalar.cpp src/input.cpp src/metrics.cpp"
 BASEFLAGS="$STD -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude"
 
 mkdir -p build
@@ -22,4 +22,7 @@ $CXX $BASEFLAGS $SRC tools/dump_case.cpp -o build/attn_dump
 echo "[4/4] blocks  : build/attn_blocks  (route 2, block sizes and row order)"
 $CXX $BASEFLAGS $SRC tests/test_blocks.cpp -o build/attn_blocks
 
-echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks"
+echo "streaming: build/attn_streaming_tests (FP64, tiles, permutations and guards)"
+$CXX $BASEFLAGS -ffp-contract=off $SRC tests/test_streaming.cpp -o build/attn_streaming_tests
+
+echo "built: build/attn_tests  build/attn_bench  build/attn_dump  build/attn_blocks  build/attn_streaming_tests"
