@@ -1,0 +1,26 @@
+% team_inputs.tex -- the ONLY file to edit before the final build of the report.
+% Plain text is enough. The characters % & # _ $ may be typed as they are.
+% Leave a pair of braces empty and the PDF shows a red [TO FILL ...] at that place.
+
+% 1. Video link (paste the full link between the braces once the video is uploaded).
+\VideoLink{}
+
+% 2. Assessed version: the release tag, and optionally the short commit hash it points to.
+\ReleaseTag{v1.0-final}
+\CommitHash{}
+
+% 3. Has the member checked and confirmed their own row of Table 13?  yes / no
+%    When all four say yes, the "Confirmed" column disappears from the table.
+\Confirmed{Li}{no}
+\Confirmed{Cui}{no}
+\Confirmed{Tang}{no}
+\Confirmed{Chen}{yes}
+
+% 4. AI-use statements for Section 10, one paragraph per member, written by that member.
+\AIStatement{Cui}{}
+
+\AIStatement{Li}{}
+
+\AIStatement{Tang}{}
+
+\AIStatement{Chen}{I used two AI coding assistants, Codex (OpenAI) and Claude (Anthropic), to produce my integration code, benchmark and experiment runners, analysis tools and documentation: I set each task, reviewed the changes, and accepted them after the repository's tests passed. Claude also wrote the first version of this report and the script \texttt{make_numbers.py} from the repository, the archived measurements and the proposal; ran the Linux build, the seven test suites, the sanitizer checks and the NumPy cross-check cited in Section 3; and made the video (slides, narration script, synthesised voice, and a replay of a real, unedited terminal run recorded on a Linux virtual machine). The timings, speedups and error values in the text, tables and figures are computed by \texttt{make_numbers.py} from the archived samples, and the test counts are read from the Linux test log. I am responsible for the content and quality of the submitted work.}

@@ -1,0 +1,2 @@
+1688 comparisons, 0 disagreements
+All other comparisons agree within tolerance (relative 1e-9 for times, 1e-12 for ratios).
