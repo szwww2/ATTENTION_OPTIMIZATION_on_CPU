@@ -8,3 +8,6 @@
 examples/controlled_20261023/** -text
 examples/thread_efficiency_20261023/** -text
 examples/machine_20261023/** -text
+
+# Shell scripts keep LF endings; bash rejects CRLF on Linux and macOS.
+*.sh text eol=lf
