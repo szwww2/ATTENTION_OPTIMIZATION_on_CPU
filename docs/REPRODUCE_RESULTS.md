@@ -1,7 +1,8 @@
 # Reproducing the results
 
-Start from `dev/chencaoyu-integration` while PR #5 is open. Run commands from the
-repository root and use a new output directory each time.
+Start from the release tag named in the report (`dev/chencaoyu-integration` holds the
+same files while PR #5 is open). Run commands from the repository root and use a new
+output directory each time.
 
 ## Rebuild tables and plots from the saved data
 
@@ -24,6 +25,19 @@ Compare the generated CSVs with the saved `summary/`, `pytorch_analysis/`,
 `roofline_analysis/` and `examples/thread_efficiency_20261023/` tables. This
 checks calculations from the recorded samples. It does not collect new timings
 and does not require PyTorch or a C++ compiler.
+
+## Recompute the numbers of the final report
+
+```text
+python -m pip install -r tools/requirements-plots.txt
+python report/make_numbers.py
+```
+
+`make_numbers.py` recomputes every statistic, table and figure of the report from
+the raw samples in `examples/controlled_20261023`, compares them with the archived
+summary tables and writes `report/generated/` and `report/figures/`. The file
+`report/generated/checks.txt` must report 0 disagreements. `bash report/build.sh`
+then rebuilds the report PDF from `report/main.tex` (needs pdflatex).
 
 ## Build and run a small example
 
