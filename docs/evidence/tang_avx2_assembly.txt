@@ -1,0 +1,24 @@
+MSVC 19.44.35228, x64, /O2 /arch:AVX2, 2026-10-21.
+Source: src/simd_routes.cpp including inline helpers from include/attn_simd.h.
+
+Reproduce from an x64 Visual Studio Developer Command Prompt in the repo root:
+  cl /nologo /std:c++17 /O2 /arch:AVX2 /EHsc /Iinclude /FAs /c src\simd_routes.cpp /Fo:build\simd_routes_evidence.obj /Fabuild\simd_routes_evidence.asm
+
+Excerpt from a generated dot-product loop (present in both SIMD routes):
+  ; include/attn_simd.h:20
+  vmovups ymm0, YMMWORD PTR [r9+r8]
+  vmulps  ymm1, ymm0, YMMWORD PTR [r8]
+  vaddps  ymm2, ymm1, ymm2
+
+Excerpt from a generated value-accumulation loop (present in both routes):
+  ; include/attn_simd.h:38
+  vmulps  ymm0, ymm3, YMMWORD PTR [r9+rcx]
+  vaddps  ymm1, ymm0, YMMWORD PTR [rcx]
+  vmovups YMMWORD PTR [rcx], ymm1
+
+Both loops use 256-bit ymm registers, processing eight FP32 values per
+vector operation. The complete generated assembly also contains scalar tail
+instructions for dimensions not divisible by eight. A search for vfmadd and
+vfmsub in this generated file returned no matches; the implementation did not
+request FMA or an approximate exponential. This is assembly evidence for the
+MSVC build, not a speedup measurement or a GCC vectorization report.

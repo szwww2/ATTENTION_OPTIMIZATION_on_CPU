@@ -13,7 +13,7 @@ struct Sample { std::size_t bk, bytes; int round, order; double ms; };
 
 // 一个shape共用输入和oracle；各候选预分配完整scratch，计时前后校验。
 // 每轮轮换Bk顺序以减少固定执行顺序偏差；输出CSV仅在本shape所有校验通过后发生。
-void measure(attn::Shape s, const std::vector<std::size_t>& candidates) {
+void measure(attn::Shape s, const std::vector<std::size_t>& candidates, int phase=0) {
     constexpr int warmup=10, reps=20;
     constexpr std::uint64_t seed=20261022;
     constexpr std::size_t bq=16;
@@ -42,10 +42,10 @@ void measure(attn::Shape s, const std::vector<std::size_t>& candidates) {
     };
     for (std::size_t n=0;n<candidates.size();++n) { call(n); before.push_back(validate(n)); }
     for (int round=0;round<warmup;++round)
-        for (std::size_t n=0;n<candidates.size();++n) call((n+round)%candidates.size());
+        for (std::size_t n=0;n<candidates.size();++n) call((n+round+phase)%candidates.size());
     for (int round=0;round<reps;++round) {
         for (std::size_t order=0;order<candidates.size();++order) {
-            const auto n=(order+round)%candidates.size();
+            const auto n=(order+round+phase)%candidates.size();
             const auto start=std::chrono::steady_clock::now();
             call(n);
             const auto stop=std::chrono::steady_clock::now();
@@ -76,9 +76,15 @@ int main(int argc,char** argv) {
             const std::string arg=argv[2];
             if (arg!="128" && arg!="256" && arg!="512") throw std::invalid_argument("invalid Bk");
             bk=std::stoul(arg);
-        } else if (mode!="tune" || argc!=2) throw std::invalid_argument("invalid arguments");
+        } else if (mode!="tune" || (argc!=2 && argc!=3)) throw std::invalid_argument("invalid arguments");
+        int phase=0;
+        if(mode=="tune" && argc==3) {
+            const std::string arg=argv[2];
+            if(arg!="0" && arg!="1" && arg!="2") throw std::invalid_argument("tuning phase must be 0, 1 or 2");
+            phase=std::stoi(arg);
+        }
         std::puts("route,mode,threads,L,d,dv,seed,query_block,key_block,workspace_bytes,warmup,reps,sample,order,ms,pre_max_abs,pre_max_rel,post_max_abs,post_max_rel,contract_pass");
-        if (mode=="tune") measure({2048,64,64},{128,256,512});
+        if (mode=="tune") measure({2048,64,64},{128,256,512},phase);
         else for (attn::Shape s : {attn::Shape{128,64,64},{512,64,64},{2048,64,64},
                                    {4096,64,64},{512,32,32},{2048,32,32}}) measure(s,{bk});
         return 0;

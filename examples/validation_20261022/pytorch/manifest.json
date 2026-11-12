@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-21T17:34:18.331334+00:00",
+  "physical_cores": 16,
+  "thread_grid": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "warmup": 10,
+  "reps": 20,
+  "seed": 20261020,
+  "jobs": [
+    {
+      "id": "L128_d64_T1",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L512_d64_T1",
+      "L": 512,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L2048_d64_T1",
+      "L": 2048,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T1",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L512_d32_T1",
+      "L": 512,
+      "d": 32,
+      "dv": 32,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L2048_d32_T1",
+      "L": 2048,
+      "d": 32,
+      "dv": 32,
+      "threads": 1,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T2",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 2,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T4",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 4,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T8",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 8,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T2",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 2,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T4",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 4,
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T8",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 8,
+      "status": "passed",
+      "exit_code": 0
+    }
+  ],
+  "unavailable_routes": [
+    "blocked_streaming"
+  ],
+  "timing": "allocating API, separate from native grid",
+  "finished_utc": "2026-10-21T17:39:52.091156+00:00"
+}

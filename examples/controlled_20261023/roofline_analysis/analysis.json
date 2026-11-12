@@ -1,0 +1,234 @@
+{
+  "status": "passed",
+  "native_environment": {
+    "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+    "source_dirty": false,
+    "source_sha256": {
+      "src/blocked_streaming_avx2.cpp": "0ff00155c0f1b92289ca69720a71e7efe79c9d5dc16c09279f8a7bf266844bfa",
+      "src/blocked_streaming_optimized.cpp": "59ea87e19519a6e6187eb6889548ab54bb0311a33a373782d2ebf9199e888d74",
+      "src/blocked_streaming_scalar.cpp": "0b2f23f1b427e8eb5e10f0b9b3dff607e0cf085572275d0d45e1c18e6307a695",
+      "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+      "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+      "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+      "src/omp_routes.cpp": "f0486adf5e88c7765ed51fc15c3b8a1f5e5d8f2055b5476cf5bf538dd4a19a60",
+      "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+      "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+      "src/simd_routes.cpp": "0fb6720a93e569dcbc4d113ee48e33644a21eb132bbed1344f42dffcdd650803",
+      "src/blocked_streaming_internal.h": "4f943b07c257661293d369f6dbcfe5d5aa75dcaa47fc9c8cf2bde5d289cb23ca",
+      "src/simd_row.h": "f59a554a5df99ae57aefe03e3ec61b886175292db4148d17f2bd57d0428fbb50",
+      "include/attn.h": "b2bcb6f42919fce6838fad6cc1dab223f5c143e000426446334dfc173d212b32",
+      "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+      "tools/bench_scalar.cpp": "7c81affcdd9641001b4d961a3370c08dc1b7010582a12c04844dcb1e49d858ab",
+      "tools/run_scalar_bench.py": "ff9b6e2118be878c6210e77003260b8ac7f60dcd1945e08c24e8d30e0d3c7195",
+      "tools/build_integrated.py": "12272e11823fd4c2e3e81493f98beb4c145c4569a3d4de88b29c5c9c607ffe9d",
+      "tools/run_project_grid.py": "f9e46780632aa2d6b0d8183f945e83025c644d0dbe7fa9884aeb4896afb0c1ee",
+      "tools/runtime_conditions.py": "4f3367b1c599d192aa3c53535643ae1c834ea8aaab1e65c02023475803a6f996",
+      "build.bat": "6504052e050018a4406dcb3a333e58f0163473b1936994bc9a9fa41ccbedf3a5",
+      "build.sh": "40d11092d88cee34a9127d3ca57d450c507a169d35c3504ab47295c875c5feaf"
+    },
+    "binary_sha256": "ec79664567419e4bc0925d440b11cdc7c7a489b329133bff5847727527d71d96",
+    "build": [
+      "status=passed",
+      "compiler=g++.exe (GCC) 16.2.0",
+      "base_flags=-std=c++17 -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude",
+      "simd_extra_flags=-mavx2",
+      "openmp_extra_flags=-fopenmp",
+      "benchmark_defines=ATTN_WITH_SIMD",
+      "simd_test_defines=ATTN_TEST_SIMD",
+      "scalar_translation_units=baseline flags; no AVX2",
+      "avx2_translation_units=src/simd_routes.cpp src/blocked_streaming_avx2.cpp"
+    ],
+    "suite": "optimized",
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": {
+      "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+      "logical_processors": 16,
+      "windows_cim": {
+        "Name": "Intel(R) Core(TM) Ultra 7 356H",
+        "NumberOfCores": 16,
+        "NumberOfLogicalProcessors": 16
+      }
+    },
+    "affinity": "explicit CPU list per job",
+    "power_mode": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
+    "openmp_environment": {
+      "OMP_WAIT_POLICY": "PASSIVE"
+    },
+    "timing_scope": "complete native kernel including resets; allocation, inputs, oracle, checks and I/O excluded",
+    "quartiles": "inclusive linear interpolation at p*(n-1)",
+    "thread_check_scope": "streaming: actual compute team checked per timed call; full/row: preflight probe only; dynamic teams disabled",
+    "cpu_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "ac_line_status": "online",
+    "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+  },
+  "calibration_environment": {
+    "status": "passed",
+    "started_utc": "2026-10-23T08:07:51.071827+00:00",
+    "cpu": {
+      "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+      "logical_processors": 16,
+      "windows_cim": {
+        "Name": "Intel(R) Core(TM) Ultra 7 356H",
+        "NumberOfCores": 16,
+        "NumberOfLogicalProcessors": 16
+      }
+    },
+    "os": "Windows-11-10.0.26200-SP0",
+    "affinity": "explicit CPU list per job",
+    "cpu_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "runtime_conditions_by_threads": {
+      "1": {
+        "allowed_cpu_ids": [
+          0
+        ],
+        "scope": "process eligibility; not per-worker placement or isolated cores",
+        "frequency_temperature": "not measured or fixed",
+        "ac_line_status": "online",
+        "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+      },
+      "2": {
+        "allowed_cpu_ids": [
+          0,
+          1
+        ],
+        "scope": "process eligibility; not per-worker placement or isolated cores",
+        "frequency_temperature": "not measured or fixed",
+        "ac_line_status": "online",
+        "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+      },
+      "4": {
+        "allowed_cpu_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "scope": "process eligibility; not per-worker placement or isolated cores",
+        "frequency_temperature": "not measured or fixed",
+        "ac_line_status": "online",
+        "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+      },
+      "8": {
+        "allowed_cpu_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "scope": "process eligibility; not per-worker placement or isolated cores",
+        "frequency_temperature": "not measured or fixed",
+        "ac_line_status": "online",
+        "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+      }
+    },
+    "power_mode": "not changed by runner",
+    "buffer_bytes": 536870912,
+    "interpretation": "read payload and independent AVX2 mul+add references, not strict attention performance bounds",
+    "warmup": 2,
+    "reps": 7,
+    "compute_iterations": 10000000,
+    "read_passes": 4,
+    "timing_scope": "workload plus OpenMP launch/reduction; data initialization excluded",
+    "arithmetic_check": "0, 1 and 17 AVX2 iterations checked against scalar FP32 recurrence before timing",
+    "openmp_environment": {
+      "OMP_WAIT_POLICY": "PASSIVE",
+      "OMP_PROC_BIND": null,
+      "OMP_PLACES": null,
+      "OMP_THREAD_LIMIT": null
+    },
+    "compiler": "g++.exe (GCC) 16.2.0",
+    "flags": [
+      "-std=c++17",
+      "-O3",
+      "-fno-tree-vectorize",
+      "-ffp-contract=off",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-fopenmp"
+    ],
+    "source_sha256": "116f26b33b7d89b8a853915b7f769c34297df041587301cac931a4267ab75e66",
+    "runner_sha256": "b9b29416de9caa7560ec459fb1ff0804c465d098a58a6420ad825e59c91e31a4",
+    "binary_sha256": "3258b3d8bd2d3c9d85444f4ed89486e112dba6230de960b9b5a8446bced034fd",
+    "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+    "source_dirty": false,
+    "exit_code": 0,
+    "finished_utc": "2026-10-23T08:08:00.893888+00:00"
+  },
+  "compatibility_scope": "CPU, OS, compiler and flags; ordered CPU eligibility and recorded power conditions",
+  "thread_scaling_note": "T1/2/4: efficiency class 1; T8: mixed classes 1 and 0; native batch 1 only",
+  "input_sha256": {
+    "manifest.json": "653d383c4fa7605c8f6ee805bc2bdfffa30edb5decfd25f02e0a8ddf008876a5",
+    "serial_L128_d64_T1_environment.json": "2be24e73d785751ec9cb2c639ceacc52e17ce2180f08e02ccb1015747ac53817",
+    "serial_L128_d64_T1_summary.csv": "9a773974fc07e4144438634699bdb1b7a2fc97c3c53eb7841227ccdc38e71cbb",
+    "serial_L128_d64_T1_raw.csv": "dd6d7e9a342bb68c0d1f7d6ebf6e729c30345851236892b50f81e4588dcc7910",
+    "serial_L512_d64_T1_environment.json": "b4f56da16116ebefc7c22fc7223391451bf23e9deaa6953e362950403a314cb2",
+    "serial_L512_d64_T1_summary.csv": "997bc4ca24f1717f643e760beb3376037fc0906438e2c66d916591d5b2e9def7",
+    "serial_L512_d64_T1_raw.csv": "251db7f6117ffcc29a518b77b4f9051ca2477cd8fcb84ec7ef92280b439cef0f",
+    "serial_L2048_d64_T1_environment.json": "2faa919dfca3459c0b04ccedcce0aae3b239acc59a4905f6739fdb5b54955fc7",
+    "serial_L2048_d64_T1_summary.csv": "5f9a36124dd69acf6841a458c4fcdc914365df8635dd984faabeadcbc4af4621",
+    "serial_L2048_d64_T1_raw.csv": "e6621cdb92e56adb5f9c697ecad1efc5ee3b2515ce759c420bba7aa7826506d1",
+    "serial_L4096_d64_T1_environment.json": "01e43f11ff2ff45b4ec674ac1e1ca9f5029faac1bde6bd3715f9b4acb6f989bc",
+    "serial_L4096_d64_T1_summary.csv": "42cff29db2c2b2ed18d8b876407af62736dbf308f4f025972fe5d4ff57717e33",
+    "serial_L4096_d64_T1_raw.csv": "b96768e1cb3fd01567ee1e955fdb02222ea89f51e322e736497a597222cf2632",
+    "serial_L512_d32_T1_environment.json": "d0974fc4ae25ab6aa89150ea0108f3f10aee6a1b044bd72bbe8ac3989ff60654",
+    "serial_L512_d32_T1_summary.csv": "150d9fc6fbd49f4f105bbb475e5c48d528c5aedef793c53f3c7c89c8f2c6cdb7",
+    "serial_L512_d32_T1_raw.csv": "8587e14a3d6e81e9b531393369086254800692243f5555f611c3bf0c1f6d746f",
+    "serial_L2048_d32_T1_environment.json": "e65c73d6d2ac7ba3235ec09af8e2e8a643c2a3a41a6f29b9b8a6a1159b9a7302",
+    "serial_L2048_d32_T1_summary.csv": "1729ae25469c6830664d3852754f113ddd440c0681ed75552e84f5ac7232c5b0",
+    "serial_L2048_d32_T1_raw.csv": "3bca89ace80747f9598b1883cc6c7f32236fafd0b066ac3efe19d4fbf9da2c8d",
+    "openmp_L128_d64_T1_environment.json": "7fbd8852e26de8c87829f4a8beacd4a05d75b4ef2b80d3ff7ac77a1f24d58970",
+    "openmp_L128_d64_T1_summary.csv": "a28e7fd25d29d0b89e431f09efef3dc38c9d60f7bfeab4d2022fe3cacd9d463a",
+    "openmp_L128_d64_T1_raw.csv": "07575ff0b944a8f067e2dfd344210df30e204b3f8afdae32423f67f5ae9ec039",
+    "openmp_L128_d64_T2_environment.json": "7d7049130cf1cb7ad3bd78f919adc3155beda09b0d28596d45f5da1a4ce66cff",
+    "openmp_L128_d64_T2_summary.csv": "288a4964f25477f4171e41daf61f97c262aa4942afb7c5b53e455643e814cf1b",
+    "openmp_L128_d64_T2_raw.csv": "45dcae1ac75e386ef44fe6b8a55293f855560a59290d094d508c6d5619da68a1",
+    "openmp_L128_d64_T4_environment.json": "1c63e9a70548b8da587a3ea7bbd60c62c1aef1efb8f5ba433a82f821466c4e17",
+    "openmp_L128_d64_T4_summary.csv": "74bf8c48419fc63587b23287088f0e18e4236a2ed2a1a4b8da2176d23d05a160",
+    "openmp_L128_d64_T4_raw.csv": "95e538d0bfdaf9896e61c975d865263773b0bfc9900dce0c29d04bd55b9f1e1b",
+    "openmp_L128_d64_T8_environment.json": "f92bfa3fbd84487eb752265a9cd83af12dfe2c00a175a7ed149d2cf1ad526e8c",
+    "openmp_L128_d64_T8_summary.csv": "8ef8f1d2853f82e47561dcc8dae0083b7b1ba020db8619eced396a1f5dc648ba",
+    "openmp_L128_d64_T8_raw.csv": "a23ba827b6d186010c2aaa193ccf385359bcf3f26f62f4bfe3cdc69992a0bf2b",
+    "openmp_L4096_d64_T1_environment.json": "546936c531cb8e00c86244fd2ab193340ea49998a60d59b7c7e959c37f417fc5",
+    "openmp_L4096_d64_T1_summary.csv": "bac1fa12346e38ad53bf61d4e9d048cd6c9e279b7d41b4ea2d05e7a56c24ca5f",
+    "openmp_L4096_d64_T1_raw.csv": "e58bcd0b6a0f5f5fd90f649cca6af970bff63e88638559c5abe63cb4f72b27f8",
+    "openmp_L4096_d64_T2_environment.json": "98eeeb21ca86ada364faa1091d598d38db6649da6a0b98c315ab34f3cbe7f73a",
+    "openmp_L4096_d64_T2_summary.csv": "ec8d9af37b3e4f197c769ba84db76f0fc919797546aa0bd1dfa8fc97d7758df3",
+    "openmp_L4096_d64_T2_raw.csv": "f4c5314d611bc153e945866c0eb095ae220b339793d41403e53342df893f7dc0",
+    "openmp_L4096_d64_T4_environment.json": "8a6804ec4761763f9fa73075d0cd8f2fe259548c356e05f61063a508f96ac7e8",
+    "openmp_L4096_d64_T4_summary.csv": "b573c28581487e6444a7a9b7da366ae62ba2097dd9523454b55dc3e66b81733c",
+    "openmp_L4096_d64_T4_raw.csv": "095b0cd2667bdc318c60703604de001c313194320ae25f3824e4f06ba7a9618a",
+    "openmp_L4096_d64_T8_environment.json": "f5c89fce99175c99239d11fc9fb2bc4f1898cec6a52a47d2cc36b6625d487d85",
+    "openmp_L4096_d64_T8_summary.csv": "b525e45171e28ddb111fa7a3f455e219bec829e12adb56de5afe2ce7a4be4ee1",
+    "openmp_L4096_d64_T8_raw.csv": "9b8dfb835ba2c94e8bbc756313dba2b03fd7938d2f648e63daef7792946b37d4"
+  },
+  "calibration_sha256": {
+    "raw.csv": "0c18f875552774540bf896bcf51e1dc3a9c46d20034327f07118284e461ca229",
+    "summary.csv": "f891d012b0840e2c20740e8f64259ee03aacda71be8605cdd964a1246b6c3daa",
+    "environment.json": "6e106def238cc90aaa309772a363abc219b392a9bc8d8375e8682286f6e8a2b3"
+  },
+  "analysis_sha256": "cb074bdbfc60dbe4e4c06534be7627a191ba7d407b8368a7bad921378a6e1b27",
+  "interpretation": "No measured DRAM intensities, automatic bottleneck classification or percentage-of-peak claims"
+}

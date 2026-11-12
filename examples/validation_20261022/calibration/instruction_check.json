@@ -1,0 +1,13 @@
+{
+  "binary_sha256": "3258b3d8bd2d3c9d85444f4ed89486e112dba6230de960b9b5a8446bced034fd",
+  "source_sha256": "116f26b33b7d89b8a853915b7f769c34297df041587301cac931a4267ab75e66",
+  "function": "_Z10arithmetici",
+  "loop_begin": "0x1400018e0",
+  "loop_end": "0x140001925",
+  "vector_multiply_instructions": 8,
+  "vector_add_instructions": 8,
+  "lanes": 8,
+  "fma_in_function": false,
+  "flops_per_iteration_per_thread": 128,
+  "check": "objdump disassembly of the actually measured executable; scalar recurrence and read checksum also passed"
+}

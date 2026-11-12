@@ -34,11 +34,13 @@ struct Case {
     const char* why;
 };
 
-void run_case(const Case& c) {
+void run_case(const Case& c, bool rowwise) {
     attn::Shape s{c.L, c.d, c.dv};
     attn::Tensors t;
     t.resize(s);
-    t.ws.assign(attn::full_matrix_workspace_elems(s), 0.0f);
+    const std::size_t bq = std::min<std::size_t>(64, s.L);
+    t.ws.assign(rowwise ? attn::rowwise_workspace_elems(s, bq)
+                        : attn::full_matrix_workspace_elems(s), 0.0f);
     t.fill_qkv(c.seed);
     if (c.zero_q) std::fill(t.q.begin(), t.q.end(), 0.0f);
     if (c.q_scale != 1.0f) {
@@ -46,7 +48,13 @@ void run_case(const Case& c) {
     }
 
     attn::oracle_fp64(s, t.q.data(), t.k.data(), t.v.data(), t.o_ref.data());
-    attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), t.o.data());
+    const auto run = [&](float* out) {
+        if (rowwise)
+            attn::rowwise_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq, t.ws.data(), out);
+        else
+            attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), out);
+    };
+    run(t.o.data());
     const attn::ErrorReport r =
         attn::check_contract(t.o.data(), t.o_ref.data(), t.o.size(), attn::Contract{});
 
@@ -69,7 +77,7 @@ void run_case(const Case& c) {
 
     if (c.repeat) {
         std::vector<float> second(t.o.size(), 12345.678f);  // sentinel: must be fully overwritten
-        attn::full_matrix_scalar_fp32(s, t.q.data(), t.k.data(), t.v.data(), t.ws.data(), second.data());
+        run(second.data());
         note(std::memcmp(second.data(), t.o.data(), t.o.size() * sizeof(float)) == 0,
              std::string(c.name) + ": repeated call is bitwise identical");
         bool sentinel_left = false;
@@ -78,6 +86,80 @@ void run_case(const Case& c) {
         }
         note(!sentinel_left, std::string(c.name) + ": output buffer fully overwritten");
     }
+
+#ifdef ATTN_TEST_SIMD
+    auto validate_simd = [&](const std::string& route, const std::vector<float>& output) {
+        const attn::ErrorReport sr =
+            attn::check_contract(output.data(), t.o_ref.data(), output.size(), attn::Contract{});
+        std::printf("    %-24s max_abs=%.3e max_rel=%.3e %s\n", route.c_str(),
+                    sr.max_abs, sr.max_rel, sr.pass ? "PASS" : "FAIL");
+        note(sr.non_finite == 0, std::string(c.name) + ": " + route + " outputs finite");
+        note(sr.pass, std::string(c.name) + ": " + route + " passes FP64 contract");
+        if (c.zero_q) {
+            std::vector<double> uniform(output.size(), 0.0);
+            attn::uniform_attention_reference(s, t.v.data(), uniform.data());
+            note(attn::check_contract(output.data(), uniform.data(), output.size(),
+                                      attn::Contract{}).pass,
+                 std::string(c.name) + ": " + route + " matches uniform-attention reference");
+        }
+        if (c.repeat) {
+            bool sentinel_left = false;
+            for (float x : output) {
+                if (x == 12345.678f) sentinel_left = true;
+            }
+            note(!sentinel_left, std::string(c.name) + ": " + route + " overwrites output");
+        }
+    };
+
+    std::vector<float> full_simd_ws(attn::full_matrix_workspace_elems(s));
+    std::vector<float> full_simd_out(t.o.size(), 12345.678f);
+    attn::full_matrix_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(),
+                                full_simd_ws.data(), full_simd_out.data());
+    validate_simd("full-matrix SIMD", full_simd_out);
+    bool full_probs_normalized = true;
+    for (std::size_t i = 0; i < s.L; ++i) {
+        double row_sum = 0.0;
+        for (std::size_t j = 0; j < s.L; ++j) {
+            const float p = full_simd_ws[i * s.L + j];
+            if (!std::isfinite(p) || p < 0.0f) full_probs_normalized = false;
+            row_sum += p;
+        }
+        if (std::fabs(row_sum - 1.0) > 1e-4) full_probs_normalized = false;
+    }
+    note(full_probs_normalized, std::string(c.name) + ": full-matrix workspace contains P");
+    if (c.repeat) {
+        std::vector<float> second(t.o.size(), 12345.678f);
+        attn::full_matrix_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(),
+                                    full_simd_ws.data(), second.data());
+        note(std::memcmp(second.data(), full_simd_out.data(), second.size() * sizeof(float)) == 0,
+             std::string(c.name) + ": full-matrix SIMD repeated call matches");
+    }
+
+    const std::size_t simd_blocks[] = {0, 1, 7, 16};
+    std::vector<float> first_rowwise_simd;
+    for (std::size_t bq : simd_blocks) {
+        std::vector<float> row_simd_ws(attn::rowwise_workspace_elems(s, bq));
+        std::vector<float> row_simd_out(t.o.size(), 12345.678f);
+        attn::rowwise_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq,
+                                row_simd_ws.data(), row_simd_out.data());
+        const std::string route = "row-wise SIMD Bq=" + std::to_string(bq);
+        validate_simd(route, row_simd_out);
+        if (first_rowwise_simd.empty()) {
+            first_rowwise_simd = row_simd_out;
+        } else {
+            note(std::memcmp(first_rowwise_simd.data(), row_simd_out.data(),
+                             row_simd_out.size() * sizeof(float)) == 0,
+                 std::string(c.name) + ": " + route + " matches Bq=1 bitwise");
+        }
+        if (c.repeat) {
+            std::vector<float> second(t.o.size(), 12345.678f);
+            attn::rowwise_simd_fp32(s, t.q.data(), t.k.data(), t.v.data(), bq,
+                                    row_simd_ws.data(), second.data());
+            note(std::memcmp(second.data(), row_simd_out.data(), second.size() * sizeof(float)) == 0,
+                 std::string(c.name) + ": " + route + " repeated call matches");
+        }
+    }
+#endif
 }
 
 }  // namespace
@@ -99,7 +181,10 @@ int main() {
         for (std::uint64_t seed = 1; seed <= 3; ++seed) {
             Case cc = c;
             cc.seed = seed;
-            run_case(cc);
+            for (bool rowwise : {false, true}) {
+                std::printf("  route=%s\n", rowwise ? "rowwise" : "full_matrix");
+                run_case(cc, rowwise);
+            }
         }
     }
 
@@ -110,7 +195,11 @@ int main() {
          "score spread ~ +/-130: max subtraction must keep exp finite"},
         {"repeated_calls", 256, 64, 64, 1, 1.0f, false, true, "determinism + output overwrite"},
     };
-    for (const Case& c : specials) run_case(c);
+    for (const Case& c : specials)
+        for (bool rowwise : {false, true}) {
+            std::printf("  route=%s\n", rowwise ? "rowwise" : "full_matrix");
+            run_case(c, rowwise);
+        }
 
     std::printf("\n%d checks, %d failures -> %s\n", checks, failures,
                 failures == 0 ? "SUITE PASSED" : "SUITE FAILED");

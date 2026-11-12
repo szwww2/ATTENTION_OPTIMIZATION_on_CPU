@@ -1,0 +1,205 @@
+{
+  "schema_version": 2,
+  "status": "passed",
+  "started_utc": "2026-10-23T08:02:56.580402+00:00",
+  "physical_cores": 16,
+  "thread_grid": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "warmup": 10,
+  "reps": 20,
+  "seed": 20261020,
+  "jobs": [
+    {
+      "id": "L128_d64_T1",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L512_d64_T1",
+      "L": 512,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L2048_d64_T1",
+      "L": 2048,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T1",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L512_d32_T1",
+      "L": 512,
+      "d": 32,
+      "dv": 32,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L2048_d32_T1",
+      "L": 2048,
+      "d": 32,
+      "dv": 32,
+      "threads": 1,
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T2",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 2,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T4",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 4,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L128_d64_T8",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "threads": 8,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T2",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 2,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T4",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 4,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "L4096_d64_T8",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "threads": 8,
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "exit_code": 0
+    }
+  ],
+  "unavailable_routes": [],
+  "query_block": 16,
+  "key_block": 128,
+  "native_study": {
+    "frozen_settings_sha256": "43be7bfe7fc12445020dba45a756165ea6be062de5070dea76d6253790d48883",
+    "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+    "protocol_sha256": "9d6529c4e1efd03dc11ef2925b50088538a25074323c59a1a39652efa0a9967c"
+  },
+  "requested_cpu_list": null,
+  "thread_scaling_note": "T1/2/4: efficiency class 1; T8: mixed classes 1 and 0",
+  "timing": "allocating API, separate from native grid",
+  "cpu_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "finished_utc": "2026-10-23T08:07:28.181171+00:00"
+}

@@ -1,0 +1,183 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-21T17:34:20.649004+00:00",
+  "L": 128,
+  "d": 64,
+  "dv": 64,
+  "threads": 1,
+  "seed": 20261020,
+  "warmup": 10,
+  "reps": 20,
+  "query_block": 16,
+  "timing_scope": "allocating CPU API: Python dispatch, output allocation, workspace allocation/reset/release and compute; output release outside timer",
+  "correctness_scope": "precheck and last timed output for each variant; not every sample",
+  "affinity": "not pinned",
+  "power_mode": "not changed by this runner",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "numpy": "2.5.4",
+  "pool_policy": {
+    "OMP_NUM_THREADS": "1",
+    "OMP_THREAD_LIMIT": null,
+    "OMP_WAIT_POLICY": "PASSIVE",
+    "KMP_BLOCKTIME": "0",
+    "OMP_PROC_BIND": null,
+    "OMP_PLACES": null
+  },
+  "pool_note": "GCC OpenMP and PyTorch runtimes are separate; equal requested thread counts do not imply equal placement",
+  "torch_version": "2.13.0+cpu",
+  "torch_build": "PyTorch built with:\n  - C++ Version: 202002\n  - MSVC 194234444\n  - Intel(R) oneAPI Math Kernel Library Version 2026.1-Product Build 20260612 for Intel(R) 64 architecture applications\n  - Intel(R) MKL-DNN v3.12.0 (Git Hash 80afa71049cd69a3df32adcccb623b12cd7baa22)\n  - OpenMP 2019\n  - LAPACK is enabled (usually provided by MKL)\n  - CPU capability usage: AVX2\n  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, COMMIT_SHA=cf30153c4c131c8164ee7798e5022d810682e2cb, CUDA_FLAGS= -DLIBCUDACXX_ENABLE_SIMPLIFIED_COMPLEX_OPERATIONS -Xcompiler /Zc:__cplusplus -Xcompiler /Zc:preprocessor -Xcompiler /w -w -Xcompiler /FS -Xfatbin -compress-all  -Xcompiler=/wd4819,/wd4503,/wd4190,/wd4244,/wd4251,/wd4275,/wd4522 -Wno-deprecated-gpu-targets --expt-extended-lambda -DCUB_WRAPPED_NAMESPACE=at_cuda_detail -DDISABLE_CUSPARSE_DEPRECATED -DCUDA_HAS_FP16=1 -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__, CXX_COMPILER=C:/actions-runner/_work/pytorch/pytorch/.ci/pytorch/windows/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /EHsc /Zc:__cplusplus /bigobj /FS /utf-8 -DNDEBUG -DUSE_KINETO -DSYMBOLICATE_MOBILE_DEBUG_HANDLE /wd4624 /wd4068 /wd4067 /wd4267 /wd4661 /wd4717 /wd4244 /wd4804 /wd4273, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.13.0, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, USE_XCCL=OFF, USE_XPU=OFF, \n",
+  "unavailable_routes": [
+    "blocked_streaming"
+  ],
+  "source_revision": "928e15119b185aec4f8efa2c8d8ef17d88cb7c8c",
+  "source_dirty": false,
+  "runner_sha256": {
+    "tools/compare_pytorch.py": "1eaf19bc312e5f2a45aebd0eb23b24cb47a77bc6839420d16b9ad82f12bd5da8",
+    "tools/attention_bridge.py": "04ee1f78ee4441977e6a867da5b96b55e7aebb56c89e8f2eb8454339dd6ce63f"
+  },
+  "bridge_build": {
+    "status": "passed",
+    "library": "gp8_attention.dll",
+    "compiler": "g++.exe (GCC) 16.2.0",
+    "compile_commands": [
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-c",
+        "src/input.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-c",
+        "src/oracle_fp64.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-c",
+        "src/full_matrix_scalar.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-c",
+        "src/rowwise_scalar.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-mavx2",
+        "-c",
+        "src/simd_routes.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-fopenmp",
+        "-c",
+        "src/omp_routes.cpp"
+      ],
+      [
+        "g++",
+        "-std=c++17",
+        "-O3",
+        "-fno-tree-vectorize",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Iinclude",
+        "-fPIC",
+        "-fopenmp",
+        "-c",
+        "tools/attention_c_api.cpp"
+      ]
+    ],
+    "link_flags": [
+      "-shared",
+      "-fopenmp"
+    ],
+    "source_sha256": {
+      "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+      "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+      "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+      "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+      "src/simd_routes.cpp": "0fb6720a93e569dcbc4d113ee48e33644a21eb132bbed1344f42dffcdd650803",
+      "src/omp_routes.cpp": "f0486adf5e88c7765ed51fc15c3b8a1f5e5d8f2055b5476cf5bf538dd4a19a60",
+      "tools/attention_c_api.cpp": "cdf2bcfa9c2a91e21ae560d6a2e571b83fa4992d4da0ffa2c69aa408da15f0dd",
+      "include/attn.h": "e26c39c5fe70636076c4219af6c8f12bdef8942d55bb062ed9a44c3030b6d1e5",
+      "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+      "src/simd_row.h": "f59a554a5df99ae57aefe03e3ec61b886175292db4148d17f2bd57d0428fbb50",
+      "tools/build_python_bridge.py": "c0c09a1408cf6d44474566d1375014fb1689416e7dbee420117bc8a8cce40902",
+      "tools/build_integrated.py": "fa814b3a758d7fa205305e4678da90c653da778654f85a3665bc7fa2f3fcb5f2"
+    },
+    "binary_sha256": "9ae36e7475d46aa0974621f16b63163f89d1bf80fec6f12c52d69bfe2e0da254"
+  },
+  "torch_intraop_threads": 1,
+  "torch_interop_threads": 1,
+  "cpp_preflight_threads": 1,
+  "input_sha256": {
+    "Q": "f890ab4ae6bc14de02a65e429c8cfceccbc0e7718ad76f647ce624b4ce20619c",
+    "K": "33d8ab2af4b7f764dd79c0c6d5b614e7e0ef74167b91e7316333b75e857bee5e",
+    "V": "a56d82944bcb93cf06dd466e46be454b35ad5787e7ef04284c8340e0d5e1bd3e"
+  },
+  "torch_sdpa_operators": [
+    "aten::_scaled_dot_product_flash_attention_for_cpu",
+    "aten::scaled_dot_product_attention"
+  ],
+  "torch_backend_verified": true,
+  "exit_code": 0,
+  "finished_utc": "2026-10-21T17:34:25.996880+00:00"
+}

@@ -1,0 +1,107 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-23T08:07:51.071827+00:00",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "os": "Windows-11-10.0.26200-SP0",
+  "affinity": "explicit CPU list per job",
+  "cpu_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "runtime_conditions_by_threads": {
+    "1": {
+      "allowed_cpu_ids": [
+        0
+      ],
+      "scope": "process eligibility; not per-worker placement or isolated cores",
+      "frequency_temperature": "not measured or fixed",
+      "ac_line_status": "online",
+      "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    },
+    "2": {
+      "allowed_cpu_ids": [
+        0,
+        1
+      ],
+      "scope": "process eligibility; not per-worker placement or isolated cores",
+      "frequency_temperature": "not measured or fixed",
+      "ac_line_status": "online",
+      "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    },
+    "4": {
+      "allowed_cpu_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "scope": "process eligibility; not per-worker placement or isolated cores",
+      "frequency_temperature": "not measured or fixed",
+      "ac_line_status": "online",
+      "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    },
+    "8": {
+      "allowed_cpu_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "scope": "process eligibility; not per-worker placement or isolated cores",
+      "frequency_temperature": "not measured or fixed",
+      "ac_line_status": "online",
+      "power_scheme_guid": "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    }
+  },
+  "power_mode": "not changed by runner",
+  "buffer_bytes": 536870912,
+  "interpretation": "read payload and independent AVX2 mul+add references, not strict attention performance bounds",
+  "warmup": 2,
+  "reps": 7,
+  "compute_iterations": 10000000,
+  "read_passes": 4,
+  "timing_scope": "workload plus OpenMP launch/reduction; data initialization excluded",
+  "arithmetic_check": "0, 1 and 17 AVX2 iterations checked against scalar FP32 recurrence before timing",
+  "openmp_environment": {
+    "OMP_WAIT_POLICY": "PASSIVE",
+    "OMP_PROC_BIND": null,
+    "OMP_PLACES": null,
+    "OMP_THREAD_LIMIT": null
+  },
+  "compiler": "g++.exe (GCC) 16.2.0",
+  "flags": [
+    "-std=c++17",
+    "-O3",
+    "-fno-tree-vectorize",
+    "-ffp-contract=off",
+    "-Wall",
+    "-Wextra",
+    "-Iinclude",
+    "-fopenmp"
+  ],
+  "source_sha256": "116f26b33b7d89b8a853915b7f769c34297df041587301cac931a4267ab75e66",
+  "runner_sha256": "b9b29416de9caa7560ec459fb1ff0804c465d098a58a6420ad825e59c91e31a4",
+  "binary_sha256": "3258b3d8bd2d3c9d85444f4ed89486e112dba6230de960b9b5a8446bced034fd",
+  "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+  "source_dirty": false,
+  "exit_code": 0,
+  "finished_utc": "2026-10-23T08:08:00.893888+00:00"
+}

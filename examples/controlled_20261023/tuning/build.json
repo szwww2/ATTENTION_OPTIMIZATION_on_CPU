@@ -1,0 +1,26 @@
+{
+  "binary_sha256": "9f13744c46cf4c4f6a31395475f39ef2bc86057ce3edb3a07343829ff6631138",
+  "source_sha256": {
+    "include/attn.h": "b2bcb6f42919fce6838fad6cc1dab223f5c143e000426446334dfc173d212b32",
+    "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+    "src/blocked_streaming_scalar.cpp": "0b2f23f1b427e8eb5e10f0b9b3dff607e0cf085572275d0d45e1c18e6307a695",
+    "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+    "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+    "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+    "tools/bench_streaming.cpp": "b528fc6c6eeb3615e31c732bde8f805c26fcc101df51d1cf6af8f02a13e6de08",
+    "tools/build_integrated.py": "12272e11823fd4c2e3e81493f98beb4c145c4569a3d4de88b29c5c9c607ffe9d",
+    "tools/run_controlled_study.py": "f9618fc46800332c8af2705f087a896812b7799aa817766b56645825ccdb0c77",
+    "tools/run_streaming_experiment.py": "76dbfba934865afd1a63202398013ff7ada2e5cfa71e281c23e01f5fe6b187ad",
+    "tools/runtime_conditions.py": "4f3367b1c599d192aa3c53535643ae1c834ea8aaab1e65c02023475803a6f996"
+  },
+  "compiler": "g++.exe (GCC) 16.2.0",
+  "flags": [
+    "-std=c++17",
+    "-O3",
+    "-fno-tree-vectorize",
+    "-ffp-contract=off",
+    "-Wall",
+    "-Wextra",
+    "-Iinclude"
+  ]
+}

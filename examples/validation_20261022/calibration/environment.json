@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-21T17:40:03.331451+00:00",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "affinity": "not pinned",
+  "power_mode": "not changed by runner",
+  "buffer_bytes": 536870912,
+  "interpretation": "read payload and independent AVX2 mul+add references, not strict attention performance bounds",
+  "warmup": 2,
+  "reps": 7,
+  "compute_iterations": 10000000,
+  "read_passes": 4,
+  "timing_scope": "workload plus OpenMP launch/reduction; data initialization excluded",
+  "arithmetic_check": "0, 1 and 17 AVX2 iterations checked against scalar FP32 recurrence before timing",
+  "openmp_environment": {
+    "OMP_WAIT_POLICY": null,
+    "OMP_PROC_BIND": null,
+    "OMP_PLACES": null,
+    "OMP_THREAD_LIMIT": null
+  },
+  "compiler": "g++.exe (GCC) 16.2.0",
+  "flags": [
+    "-std=c++17",
+    "-O3",
+    "-fno-tree-vectorize",
+    "-ffp-contract=off",
+    "-Wall",
+    "-Wextra",
+    "-Iinclude",
+    "-fopenmp"
+  ],
+  "source_sha256": "116f26b33b7d89b8a853915b7f769c34297df041587301cac931a4267ab75e66",
+  "runner_sha256": "271257177dba25dd44f87d3d4aec605355adb84c405bf1707c3f071b1d2a00a9",
+  "binary_sha256": "3258b3d8bd2d3c9d85444f4ed89486e112dba6230de960b9b5a8446bced034fd",
+  "source_revision": "928e15119b185aec4f8efa2c8d8ef17d88cb7c8c",
+  "source_dirty": false,
+  "exit_code": 0,
+  "finished_utc": "2026-10-21T17:40:10.436665+00:00"
+}

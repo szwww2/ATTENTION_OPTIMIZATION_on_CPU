@@ -1,0 +1,23 @@
+platform: Linux 6.18.44-fc-v310 / g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+source: b9b68d7bc4e20a20d1714750fd82b93fcedcdf78
+suite=attn_tests exit=0 :: 90 checks, 0 failures -> SUITE PASSED
+suite=attn_blocks exit=0 :: 454 checks, 0 failures -> BLOCK SUITE PASSED
+suite=attn_simd_kernels_tests exit=0 :: 23 checks, 0 failures -> SIMD KERNEL SUITE PASSED
+suite=attn_simd_tests exit=0 :: 354 checks, 0 failures -> SUITE PASSED
+suite=attn_omp_tests exit=0 :: 635 checks, 0 failures -> OPENMP SUITE PASSED
+suite=attn_streaming_tests exit=0 :: streaming: 11498 checks, 0 failures, max_abs=3.54013512e-06 -> STREAMING SUITE PASSED
+suite=attn_streaming_optimized_tests exit=0 :: optimized streaming: 13181 checks, 0 failures, max_abs=2.59116849e-06, largest_actual_team=8
+largest absolute error printed by each suite (maximum over all lines of the suite's own output; suites that print no error value are omitted):
+suite-max attn_tests max_abs=8.953e-06 (large_scores)
+suite-max attn_blocks max_abs=8.953e-06 (large_scores)
+suite-max attn_simd_tests max_abs=8.953e-06 (large_scores)
+suite-max attn_streaming_tests max_abs=3.540e-06 (suite summary line)
+suite-max attn_streaming_optimized_tests max_abs=2.591e-06 (suite summary line)
+sanitizers: -fsanitize=address,undefined, -O1, same seven suites: 7 of 7 exit=0, 0 failures, no sanitizer reports
+numpy-crosscheck L=512 d=64 dv=64 seed=1:
+[1] splitmix64 reproduction        : OK (q/k/v bit-identical)
+[2] NumPy FP64 vs C++ FP64 oracle  : OK (max |diff| = 2.359e-16)
+[3] NumPy FP32 vs contract         : OK (max_abs = 4.700e-08, worst_margin = -1.000e-04)
+[4] C++ FP32 vs NumPy FP64         : OK
+    (info) C++ FP32 max_abs = 1.454e-07, NumPy FP32 max_abs = 4.700e-08, |C++ - NumPy| max = 1.565e-07
+CROSS-CHECK PASSED

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "export_date": "2026-10-23",
+  "source_revision": "f7b4b09a6d4243269401fccb14e61f5664f1d2e5",
+  "source_directory_in_repository": "results/formal_20261023/study_steady",
+  "source_files": 212,
+  "exported_source_files": 197,
+  "byte_preserved_source_files": 194,
+  "omitted_console_logs": 15,
+  "raw_data": {
+    "native": {
+      "files": 42,
+      "samples": 3600
+    },
+    "tuning": {
+      "files": 3,
+      "samples": 180
+    },
+    "pytorch": {
+      "files": 12,
+      "samples": 960
+    },
+    "calibration": {
+      "files": 1,
+      "samples": 56
+    }
+  },
+  "protocol_sha256": "9d6529c4e1efd03dc11ef2925b50088538a25074323c59a1a39652efa0a9967c",
+  "frozen_settings_sha256": "43be7bfe7fc12445020dba45a756165ea6be062de5070dea76d6253790d48883",
+  "reanalysis": {
+    "status": "passed",
+    "input": "this exported package",
+    "native_configurations": 180,
+    "api_configurations": 48,
+    "native_batches": 3,
+    "api_batches": 1,
+    "same_bytes_as_saved_csv_json_png": 14,
+    "new_performance_measurement": false
+  },
+  "figures": {
+    "count": 5,
+    "opened_and_visually_checked": true
+  },
+  "hash_manifests": {
+    "source_and_export": "export_hashes.csv",
+    "package": "SHA256SUMS.txt",
+    "package_manifest_self_exclusion": "SHA256SUMS.txt"
+  },
+  "path_convention": "Historical results/... command and prefix fields are source records; analyzers resolve job files beside their manifest. build/, src/, include/, tools/ are repository-relative.",
+  "regenerated_source_files": 2,
+  "derived_analysis_revision": {
+    "date": "2026-10-23",
+    "scope": "Rowwise scenario suffix only: score_spill -> cached_row; full_matrix unchanged",
+    "changed_scenario_rows": 10,
+    "numeric_fields_unchanged": true,
+    "png_bytes_unchanged": true,
+    "source_measurements_unchanged": true,
+    "roofline_analyzer_sha256_before": "b50f9e05ab14410ecfd454733d061ee018d031b9aa6e118a6405e5997f530615",
+    "roofline_analyzer_sha256_after": "cb074bdbfc60dbe4e4c06534be7627a191ba7d407b8368a7bad921378a6e1b27",
+    "original_roofline_snapshot_retained_locally": true,
+    "historical_source_hashes_retained_in": "export_hashes.csv"
+  }
+}

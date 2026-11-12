@@ -1,0 +1,40 @@
+{
+  "started_utc": "2026-10-19T17:59:02.975617+00:00",
+  "source_revision": "49cd7c6fa779b9e38725668905f5dd3d3a924650",
+  "source_dirty": false,
+  "source_sha256": {
+    "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+    "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+    "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+    "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+    "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+    "include/attn.h": "d04c996da7caf53a8e40d1e50d7e7300d0891fe3dfd047d8ab4d1094a21e84de",
+    "tools/bench_scalar.cpp": "3b59c785086fbd3181e29390503203b0fc0e7f0900568e1f3c19f7a1adeac827",
+    "tools/run_scalar_bench.py": "105e6ca74bd2b71ed7e87e904b8f931e084889c7d57b46fb94bfdf3221ed19d2",
+    "build.bat": "0846906995052a93b7a641b96e934abed7bcbea894acc6805cd0b83da088b893",
+    "build.sh": "353f726974bad2dacf7ff0801520a936428cd7e8147956054e1c7381550918ac"
+  },
+  "binary_sha256": "e3cc50e55f84c039721658cbbb845d57e71447c84f5c4ea111c14619654ae590",
+  "build": [
+    "flags=-std=c++17 -O3 -fno-tree-vectorize -Wall -Wextra -Iinclude",
+    "g++.exe (GCC) 16.2.0"
+  ],
+  "os": "Windows-11-10.0.26200-SP0",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "threads": 1,
+  "affinity": "not pinned by the harness",
+  "power_mode": "not controlled by the harness",
+  "timing_scope": "complete native kernel including resets; allocation, inputs, oracle, checks and I/O excluded",
+  "quartiles": "inclusive linear interpolation at p*(n-1)",
+  "status": "passed",
+  "finished_utc": "2026-10-19T17:59:06.657802+00:00",
+  "exit_code": 0
+}

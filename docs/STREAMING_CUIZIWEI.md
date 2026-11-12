@@ -74,7 +74,11 @@ For each query, after finding the block maximum:
    weighted V rows to u.
 4. After the last key block, write `out=u/l`.
 
-All arithmetic/accumulation is FP32. `std::exp` remains scalar. This in-place
+Inputs, outputs, score/state buffers and multiply/add accumulations are FP32.
+`std::exp` remains scalar; its internal precision depends on the math library.
+The [measured GCC build](GCC_CODEGEN_EVIDENCE.md#the-exponential-call-inside-softmax)
+converts each `expf` argument to double, calls `exp`, then converts the result back.
+This in-place
 form is algebraically the online merge without allocating a separate block
 weighted-sum vector. Changing block sizes/order changes rounding, so bitwise
 equality is required only for repeated calls using the identical schedule.

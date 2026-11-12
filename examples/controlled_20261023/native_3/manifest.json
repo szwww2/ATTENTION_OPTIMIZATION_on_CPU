@@ -1,0 +1,310 @@
+{
+  "created_utc": "2026-10-23T07:53:27.254566+00:00",
+  "status": "completed_available_runs",
+  "dry_run": false,
+  "physical_cores": 16,
+  "thread_grid": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "query_block": 16,
+  "block_setting": "fixed for this grid; selection provenance belongs to the study frozen_settings.json when launched by run_controlled_study",
+  "warmup": 10,
+  "reps": 20,
+  "seed": 20261020,
+  "memory_budget_mib": 512,
+  "memory_estimate": "buffers + one spare L*L FP32 matrix, 25% margin, 64 MiB reserve; not measured RSS",
+  "jobs": [
+    {
+      "id": "openmp_L128_d64_T2",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 2,
+      "variants": 3,
+      "estimated_bytes": 67817624,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L128_d64_T2",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1
+      ],
+      "started_utc": "2026-10-23T07:53:27.254566+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:53:28.971378+00:00"
+    },
+    {
+      "id": "openmp_L128_d64_T4",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 4,
+      "variants": 3,
+      "estimated_bytes": 67869144,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L128_d64_T4",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "started_utc": "2026-10-23T07:53:28.971378+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:53:30.663326+00:00"
+    },
+    {
+      "id": "openmp_L128_d64_T8",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 8,
+      "variants": 3,
+      "estimated_bytes": 67972184,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L128_d64_T8",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "started_utc": "2026-10-23T07:53:30.663326+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:53:32.381911+00:00"
+    },
+    {
+      "id": "openmp_L4096_d64_T1",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 1,
+      "variants": 3,
+      "estimated_bytes": 250994424,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L4096_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T07:53:32.381911+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:54:50.653697+00:00"
+    },
+    {
+      "id": "openmp_L4096_d64_T2",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 2,
+      "variants": 3,
+      "estimated_bytes": 251337624,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L4096_d64_T2",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1
+      ],
+      "started_utc": "2026-10-23T07:54:50.653697+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:55:36.673831+00:00"
+    },
+    {
+      "id": "openmp_L4096_d64_T4",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 4,
+      "variants": 3,
+      "estimated_bytes": 252024024,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L4096_d64_T4",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "started_utc": "2026-10-23T07:55:36.673831+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:56:01.892377+00:00"
+    },
+    {
+      "id": "openmp_L4096_d64_T8",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 8,
+      "variants": 3,
+      "estimated_bytes": 253396824,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L4096_d64_T8",
+      "status": "passed",
+      "cpu_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "started_utc": "2026-10-23T07:56:01.892377+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:56:29.719545+00:00"
+    },
+    {
+      "id": "serial_L128_d64_T1",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 68023024,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L128_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T07:56:29.719545+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:56:31.794864+00:00"
+    },
+    {
+      "id": "serial_L512_d64_T1",
+      "L": 512,
+      "d": 64,
+      "dv": 64,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 73617904,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L512_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T07:56:31.794864+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:56:36.928929+00:00"
+    },
+    {
+      "id": "serial_L2048_d64_T1",
+      "L": 2048,
+      "d": 64,
+      "dv": 64,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 140234224,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L2048_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T07:56:36.928929+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T07:57:37.405667+00:00"
+    },
+    {
+      "id": "serial_L4096_d64_T1",
+      "L": 4096,
+      "d": 64,
+      "dv": 64,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 339156464,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L4096_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T07:57:37.405667+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T08:01:29.666141+00:00"
+    },
+    {
+      "id": "serial_L512_d32_T1",
+      "L": 512,
+      "d": 32,
+      "dv": 32,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 72383984,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L512_d32_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T08:01:29.666141+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T08:01:34.269119+00:00"
+    },
+    {
+      "id": "serial_L2048_d32_T1",
+      "L": 2048,
+      "d": 32,
+      "dv": 32,
+      "mode": "serial",
+      "threads": 1,
+      "variants": 6,
+      "estimated_bytes": 135313904,
+      "prefix": "results/formal_20261023/study_steady/native_3/serial_L2048_d32_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T08:01:34.269119+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T08:02:19.638196+00:00"
+    },
+    {
+      "id": "openmp_L128_d64_T1",
+      "L": 128,
+      "d": 64,
+      "dv": 64,
+      "mode": "openmp",
+      "threads": 1,
+      "variants": 3,
+      "estimated_bytes": 67791864,
+      "prefix": "results/formal_20261023/study_steady/native_3/openmp_L128_d64_T1",
+      "status": "passed",
+      "cpu_ids": [
+        0
+      ],
+      "started_utc": "2026-10-23T08:02:19.638196+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-23T08:02:21.516548+00:00"
+    }
+  ],
+  "job_order": "rotate",
+  "unavailable_routes": [],
+  "streaming": true,
+  "key_block": 128,
+  "cpu_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "finished_utc": "2026-10-23T08:02:21.516548+00:00"
+}

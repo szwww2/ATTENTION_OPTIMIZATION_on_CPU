@@ -1,0 +1,2 @@
+# Preserve recorded CSV bytes so the analysis input hashes survive a checkout.
+*.csv -text

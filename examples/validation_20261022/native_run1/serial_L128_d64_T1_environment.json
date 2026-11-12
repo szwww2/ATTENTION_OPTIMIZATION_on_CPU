@@ -1,0 +1,101 @@
+{
+  "started_utc": "2026-10-21T17:02:51.428476+00:00",
+  "source_revision": "57c0edb4e444b77428eaed99e0c8524b9bfef71d",
+  "source_dirty": false,
+  "source_sha256": {
+    "src/full_matrix_scalar.cpp": "103cae3c27150b104e127beb771a15d1567ae898393ff69b91bb08cd2493dcf1",
+    "src/input.cpp": "4b18b5e83ca13ef54e382de9ebdcc6910885f0067387647157ecea142f49118e",
+    "src/metrics.cpp": "d7f6b764fb823382e2f53f21e6b7dacbf29ce128eb872859536a7547cc33c106",
+    "src/omp_routes.cpp": "f0486adf5e88c7765ed51fc15c3b8a1f5e5d8f2055b5476cf5bf538dd4a19a60",
+    "src/oracle_fp64.cpp": "fbf9880aef2842893f2c6edd5cf0b847bfcdb8628815d285627647536fc403c2",
+    "src/rowwise_scalar.cpp": "6cf8f416dea6a5196a76c9e0bd518adef18b250b783496fa308c67eca625aaef",
+    "src/simd_routes.cpp": "0fb6720a93e569dcbc4d113ee48e33644a21eb132bbed1344f42dffcdd650803",
+    "src/simd_row.h": "f59a554a5df99ae57aefe03e3ec61b886175292db4148d17f2bd57d0428fbb50",
+    "include/attn.h": "e26c39c5fe70636076c4219af6c8f12bdef8942d55bb062ed9a44c3030b6d1e5",
+    "include/attn_simd.h": "5f7efa9320dbe866decc6f5d45b31994c678821e4f08338c827a57fa9843d628",
+    "tools/bench_scalar.cpp": "0ba7e52a9ec61887dcf0affa858a5396c5450858bed4733d86371bd65d658855",
+    "tools/run_scalar_bench.py": "841f5c582acf7023af192c747bdba5475ca4e3522287b7fdbe2e7d285b093b7e",
+    "tools/build_integrated.py": "fa814b3a758d7fa205305e4678da90c653da778654f85a3665bc7fa2f3fcb5f2",
+    "tools/run_project_grid.py": "082fdd69c3ebf50bda735a1a2e70ff8460ace26f4a0ee99844da4bf75273948b",
+    "build.bat": "c8e8483401db01d2da54042286c6c87d26b433492341320105008dd52aed7ad8",
+    "build.sh": "6034dd1b663c3071bd03f9e078a2e1fe9f2d4480c4da1c0c59971d52ea040c8b"
+  },
+  "binary_sha256": "8ed05a247371aebab2cd21b143fe2b0c635ceab3b1a9fda4cad0228b8335fbdb",
+  "build": [
+    "status=passed",
+    "compiler=g++.exe (GCC) 16.2.0",
+    "base_flags=-std=c++17 -O3 -fno-tree-vectorize -ffp-contract=off -Wall -Wextra -Iinclude",
+    "simd_extra_flags=-mavx2",
+    "openmp_extra_flags=-fopenmp",
+    "benchmark_defines=ATTN_WITH_SIMD",
+    "simd_test_defines=ATTN_TEST_SIMD",
+    "scalar_translation_units=baseline flags; no AVX2"
+  ],
+  "suite": "optimized",
+  "benchmark_arguments": [
+    "--mode",
+    "serial",
+    "--threads",
+    "1",
+    "--L",
+    "128",
+    "--d",
+    "64",
+    "--dv",
+    "64",
+    "--query-block",
+    "16",
+    "--warmup",
+    "10",
+    "--reps",
+    "20",
+    "--seed",
+    "20261020"
+  ],
+  "os": "Windows-11-10.0.26200-SP0",
+  "cpu": {
+    "description": "Intel64 Family 6 Model 204 Stepping 2, GenuineIntel",
+    "logical_processors": 16,
+    "windows_cim": {
+      "Name": "Intel(R) Core(TM) Ultra 7 356H",
+      "NumberOfCores": 16,
+      "NumberOfLogicalProcessors": 16
+    }
+  },
+  "threads": "per variant",
+  "openmp_environment": {},
+  "affinity": "not pinned by the harness",
+  "power_mode": "not controlled by the harness",
+  "timing_scope": "complete native kernel including resets; allocation, inputs, oracle, checks and I/O excluded",
+  "quartiles": "inclusive linear interpolation at p*(n-1)",
+  "status": "passed",
+  "variant_threads": [
+    {
+      "route": "full_matrix",
+      "mode": "scalar",
+      "threads": "1",
+      "actual_threads": "1"
+    },
+    {
+      "route": "rowwise",
+      "mode": "scalar",
+      "threads": "1",
+      "actual_threads": "1"
+    },
+    {
+      "route": "full_matrix",
+      "mode": "simd",
+      "threads": "1",
+      "actual_threads": "1"
+    },
+    {
+      "route": "rowwise",
+      "mode": "simd",
+      "threads": "1",
+      "actual_threads": "1"
+    }
+  ],
+  "thread_check_scope": "OpenMP preflight team probe; dynamic teams disabled; timed calls not instrumented",
+  "finished_utc": "2026-10-21T17:02:54.019396+00:00",
+  "exit_code": 0
+}
